@@ -1,0 +1,410 @@
+// auth-ui.js
+// ============================================================================
+// AUTHENTICATION UI HANDLER
+// Connects Firebase auth to your UI
+// ============================================================================
+
+import { 
+  initAuthListener, 
+  signUp, 
+  signIn, 
+  signInWithGoogle, 
+  signOutUser, 
+  resetPassword,
+  getCurrentAuthUser 
+} from './firebase-config/auth.js';
+
+import {
+  createUserProfile
+} from './firebase-config/database.js';
+
+// ============================================================================
+// INITIALIZE
+// ============================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🔐 Initializing authentication UI...');
+  
+  // Start listening for auth state changes
+  initAuthListener();
+  
+  console.log('✅ Auth UI initialized');
+});
+
+// ============================================================================
+// MODAL CONTROLS
+// ============================================================================
+
+/**
+ * Open authentication modal
+ * @param {string} tab - 'signin' or 'signup'
+ */
+window.openAuthModal = function(tab = 'signin') {
+  const modal = document.getElementById('auth-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent scrolling
+    switchAuthTab(tab);
+  }
+};
+
+/**
+ * Close authentication modal
+ */
+window.closeAuthModal = function() {
+  const modal = document.getElementById('auth-modal');
+  if (modal) {
+    modal.style.display = 'none';
+    document.body.style.overflow = ''; // Restore scrolling
+    clearAuthErrors();
+  }
+};
+
+/**
+ * Switch between signin/signup tabs
+ * @param {string} tab 
+ */
+window.switchAuthTab = function(tab) {
+  // Update tab buttons
+  document.querySelectorAll('.auth-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  
+  // Update form containers
+  document.querySelectorAll('.auth-form-container').forEach(container => {
+    container.classList.remove('active');
+    container.style.display = 'none';
+  });
+  
+  if (tab === 'signin') {
+    document.getElementById('signin-form').style.display = 'block';
+    document.getElementById('signin-form').classList.add('active');
+  } else if (tab === 'signup') {
+    document.getElementById('signup-form').style.display = 'block';
+    document.getElementById('signup-form').classList.add('active');
+  }
+  
+  clearAuthErrors();
+};
+
+/**
+ * Show password reset form
+ */
+window.showPasswordReset = function() {
+  document.querySelectorAll('.auth-form-container').forEach(container => {
+    container.classList.remove('active');
+    container.style.display = 'none';
+  });
+  
+  document.getElementById('reset-password-form').style.display = 'block';
+  document.getElementById('reset-password-form').classList.add('active');
+  
+  clearAuthErrors();
+};
+
+// ============================================================================
+// SIGN IN HANDLER
+// ============================================================================
+
+window.handleSignIn = async function(event) {
+  event.preventDefault();
+  
+  const email = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  const errorDiv = document.getElementById('signin-error');
+  
+  // Disable button and show loading
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Signing in...';
+  errorDiv.style.display = 'none';
+  
+  try {
+    const result = await signIn(email, password);
+    
+    if (result.success) {
+      showSuccessToast('Welcome back!');
+      closeAuthModal();
+      
+      // Reset form
+      event.target.reset();
+    } else {
+      showAuthError('signin-error', result.error);
+    }
+    
+  } catch (error) {
+    console.error('Sign in error:', error);
+    showAuthError('signin-error', 'An unexpected error occurred. Please try again.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Sign In';
+  }
+};
+
+// ============================================================================
+// SIGN UP HANDLER
+// ============================================================================
+
+window.handleSignUp = async function(event) {
+  event.preventDefault();
+  
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const confirmPassword = document.getElementById('signup-password-confirm').value;
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  const errorDiv = document.getElementById('signup-error');
+  
+  // Validate passwords match
+  if (password !== confirmPassword) {
+    showAuthError('signup-error', 'Passwords do not match');
+    return;
+  }
+  
+  // Disable button and show loading
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Creating account...';
+  errorDiv.style.display = 'none';
+  
+  try {
+    const result = await signUp(email, password, name);
+    
+    if (result.success) {
+      // Create user profile in Firestore
+      await createUserProfile(result.user.uid, {
+        email: result.user.email,
+        displayName: result.user.displayName
+      });
+      
+      showSuccessToast('Account created! Check your email to verify.');
+      closeAuthModal();
+      
+      // Reset form
+      event.target.reset();
+    } else {
+      showAuthError('signup-error', result.error);
+    }
+    
+  } catch (error) {
+    console.error('Sign up error:', error);
+    showAuthError('signup-error', 'An unexpected error occurred. Please try again.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Create Account';
+  }
+};
+
+// ============================================================================
+// GOOGLE SIGN IN HANDLER
+// ============================================================================
+
+window.handleGoogleSignIn = async function() {
+  const errorDiv = document.querySelector('.auth-form-container.active .auth-error');
+  
+  if (errorDiv) errorDiv.style.display = 'none';
+  
+  try {
+    const result = await signInWithGoogle();
+    
+    if (result.success) {
+      // Create/update user profile in Firestore
+      await createUserProfile(result.user.uid, {
+        email: result.user.email,
+        displayName: result.user.displayName,
+        photoURL: result.user.photoURL
+      });
+      
+      showSuccessToast('Signed in with Google!');
+      closeAuthModal();
+    } else {
+      if (result.error !== 'Sign-in cancelled') {
+        showAuthError('signin-error', result.error);
+      }
+    }
+    
+  } catch (error) {
+    console.error('Google sign in error:', error);
+    showAuthError('signin-error', 'Google sign-in failed. Please try again.');
+  }
+};
+
+// ============================================================================
+// PASSWORD RESET HANDLER
+// ============================================================================
+
+window.handlePasswordReset = async function(event) {
+  event.preventDefault();
+  
+  const email = document.getElementById('reset-email').value.trim();
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  const errorDiv = document.getElementById('reset-error');
+  const successDiv = document.getElementById('reset-success');
+  
+  // Disable button and show loading
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending...';
+  errorDiv.style.display = 'none';
+  successDiv.style.display = 'none';
+  
+  try {
+    const result = await resetPassword(email);
+    
+    if (result.success) {
+      successDiv.textContent = result.message;
+      successDiv.style.display = 'block';
+      
+      // Reset form
+      event.target.reset();
+      
+      // Switch back to signin after 3 seconds
+      setTimeout(() => {
+        switchAuthTab('signin');
+      }, 3000);
+    } else {
+      errorDiv.textContent = result.error;
+      errorDiv.style.display = 'block';
+    }
+    
+  } catch (error) {
+    console.error('Password reset error:', error);
+    errorDiv.textContent = 'Failed to send reset email. Please try again.';
+    errorDiv.style.display = 'block';
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send Reset Link';
+  }
+};
+
+// ============================================================================
+// SIGN OUT HANDLER
+// ============================================================================
+
+window.handleSignOut = async function() {
+  try {
+    const result = await signOutUser();
+    
+    if (result.success) {
+      showSuccessToast('Signed out successfully');
+      
+      // Hide profile menu
+      const profileMenu = document.getElementById('user-profile-menu');
+      if (profileMenu) profileMenu.style.display = 'none';
+      
+      // Redirect to home if on protected page
+      if (window.location.pathname.includes('dashboard')) {
+        window.location.href = 'index.html';
+      }
+    }
+    
+  } catch (error) {
+    console.error('Sign out error:', error);
+    alert('Failed to sign out. Please try again.');
+  }
+};
+
+// ============================================================================
+// PROFILE MENU CONTROLS
+// ============================================================================
+
+window.toggleProfileMenu = function() {
+  const dropdown = document.getElementById('profile-dropdown');
+  if (dropdown) {
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+  }
+};
+
+// Close profile menu when clicking outside
+document.addEventListener('click', (event) => {
+  const profileMenu = document.getElementById('user-profile-menu');
+  const dropdown = document.getElementById('profile-dropdown');
+  
+  if (profileMenu && dropdown && !profileMenu.contains(event.target)) {
+    dropdown.style.display = 'none';
+  }
+});
+
+// ============================================================================
+// UI HELPERS
+// ============================================================================
+
+/**
+ * Show error message
+ */
+function showAuthError(elementId, message) {
+  const errorDiv = document.getElementById(elementId);
+  if (errorDiv) {
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+  }
+}
+
+/**
+ * Clear all error messages
+ */
+function clearAuthErrors() {
+  document.querySelectorAll('.auth-error, .auth-success').forEach(el => {
+    el.style.display = 'none';
+    el.textContent = '';
+  });
+}
+
+/**
+ * Show success toast notification
+ */
+function showSuccessToast(message) {
+  const toast = document.getElementById('success-toast');
+  const messageEl = document.getElementById('success-toast-message');
+  
+  if (toast && messageEl) {
+    messageEl.textContent = message;
+    toast.style.display = 'flex';
+    
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 3000);
+  }
+}
+
+// ============================================================================
+// PROTECTED PAGES
+// ============================================================================
+
+/**
+ * Redirect to sign in if user is not authenticated
+ * Call this on protected pages (dashboard, etc.)
+ */
+export function requireAuth() {
+  const user = getCurrentAuthUser();
+  
+  if (!user) {
+    console.log('⚠️ User not authenticated, redirecting to sign in');
+    window.location.href = 'index.html';
+  }
+  
+  return user;
+}
+
+/**
+ * Open my playlists page/modal
+ */
+window.openMyPlaylists = function() {
+  const user = getCurrentAuthUser();
+  
+  if (!user) {
+    openAuthModal('signin');
+    return;
+  }
+  
+  // Navigate to playlists page or open modal
+  window.location.href = 'my-playlists.html';
+};
+
+// ============================================================================
+// EXPORT
+// ============================================================================
+
+export default {
+  openAuthModal,
+  closeAuthModal,
+  requireAuth
+};

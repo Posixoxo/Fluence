@@ -1,107 +1,1206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Your Playlist</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Young+Serif&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Your Playlist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="firebase-config/firebase-config.js"></script>
+  <script type="module" src="auth.js"></script>
+
+  <style>
+    :root {
+      /* Background Layers */
+      --static-bg-primary: #081917;      /* updated to your ink black */
+      --static-bg-secondary: #0d2b27;    /* slightly lifted ink */
+      --static-bg-card: #094c41;         /* pine teal */
+
+      /* Text */
+      --static-text-primary: #f5f5f5;
+      --static-text-secondary: #b8d4cf;
+      --static-text-muted: #7fa8a2;
+
+      /* Accents */
+      --static-accent-primary: #fcb790;   /* peach glow */
+      --static-accent-secondary: #3fb2a1;
+
+      /* Borders */
+      --static-border: rgba(255, 255, 255, 0.07);
+
+      /* Buttons */
+      --static-button-bg: #094c41;
+      --static-button-hover: #0b5e52;
+      --static-button-text: #f5f5f5;
+
+      /* Special UI */
+      --static-input-bg: #0d2b27;        /* matches secondary for depth */
+      --static-hover-surface: rgba(252, 183, 144, 0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--static-bg-primary);
+      color: var(--static-text-primary);
+      min-height: 100vh;
+    }
+
+
+.preview-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 25, 23, 0.95);
+  backdrop-filter: blur(12px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.preview-modal-overlay.open { display: flex; }
+
+.preview-modal {
+  background: var(--static-bg-secondary);
+  border: 1px solid var(--static-border);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.preview-modal-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--static-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.preview-modal-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--static-text-primary);
+}
+
+.preview-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--static-input-bg);
+  border: 1px solid var(--static-border);
+  color: var(--static-text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.preview-close-btn:hover {
+  background: var(--static-bg-card);
+  color: var(--static-text-primary);
+}
+
+.preview-modal-body { padding: 24px; }
+
+.preview-cover-section {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+
+.preview-cover {
+  width: 180px;
+  height: 180px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--static-input-bg);
+  flex-shrink: 0;
+}
+
+.preview-info { flex: 1; min-width: 0; }
+
+.preview-platform {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--static-accent-primary);
+  background: rgba(252, 183, 144, 0.15);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.preview-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--static-text-primary);
+}
+
+.preview-desc {
+  color: var(--static-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.preview-tracks-section {
+  margin-bottom: 24px;
+}
+
+.preview-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--static-text-muted);
+  margin-bottom: 12px;
+}
+
+.preview-track-list {
+  background: var(--static-input-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--static-border);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.preview-track-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--static-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.preview-track-item:last-child { border-bottom: none; }
+
+.preview-track-num {
+  font-size: 12px;
+  color: var(--static-text-muted);
+  min-width: 20px;
+}
+
+.preview-track-info { flex: 1; min-width: 0; }
+
+.preview-track-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--static-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-track-artist {
+  font-size: 12px;
+  color: var(--static-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-track-duration {
+  font-size: 12px;
+  color: var(--static-text-muted);
+}
+
+.preview-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.preview-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.preview-btn-primary {
+  background: linear-gradient(135deg, var(--static-accent-primary), var(--static-accent-secondary));
+  color: var(--static-bg-primary);
+}
+
+.preview-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(252, 183, 144, 0.3);
+}
+
+.preview-btn-secondary {
+  background: var(--static-input-bg);
+  border: 1px solid var(--static-border);
+  color: var(--static-text-primary);
+}
+
+.preview-loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--static-text-muted);
+}
+
+.preview-error {
+  background: rgba(255, 82, 82, 0.1);
+  border: 1px solid rgba(255, 82, 82, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  color: #ff8888;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+    /* NAV */
+    .add-nav {
+      display: flex;
+      position: fixed;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-top: 1px solid var(--static-border);
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(8, 25, 23, 0.8); /* matching bg-primary with opacity */
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px); 
+      z-index: 1000;
+    }
+
+    .add-nav-links {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 22px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .add-back-link img {
+      display: block;
+      width: 20px;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .add-back-link p{
+      font-size: 11px;
+      font-family: "Caprasimo", serif;
+      color: var(--text-primary);
+      letter-spacing: 2px;
+    }
+
+    .add-back-link {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      color: var(--static-text-secondary); /* neutral state */
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .add-back-link:hover { color: var(--static-accent-primary); }
+
+    /* MAIN */
+    .add-main {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .add-header { margin-bottom: 40px; }
+
+    .add-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--static-accent-primary); /* peach glow eyebrow */
+      margin-bottom: 12px;
+    }
+
+    .add-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 12px;
+      color: var(--static-text-primary);
+    }
+
+    .add-subtitle {
+      color: var(--static-text-secondary);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* FORM CARD */
+    .add-card {
+      background: var(--static-bg-secondary);
+      border: 1px solid var(--static-border);
+      border-radius: 20px;
+      padding: 32px;
+    }
+
+    .form-section { margin-bottom: 28px; }
+    .form-section:last-child { margin-bottom: 0; }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--static-text-muted);
+      margin-bottom: 10px;
+    }
+
+    .form-label .required { color: var(--static-accent-primary); }
+
+    .link-input-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .link-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .platform-badge {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 14px 14px 44px;
+      background: var(--static-input-bg);
+      border: 2px solid var(--static-border);
+      border-radius: 12px;
+      color: var(--static-text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .form-input:focus { border-color: var(--static-accent-primary); }
+    .form-input::placeholder { color: var(--static-text-muted); }
+
+    .form-input-plain {
+      padding: 14px;
+      background: var(--static-input-bg);
+      border: 2px solid var(--static-border);
+      border-radius: 12px;
+      color: var(--static-text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input-plain:focus { border-color: var(--static-accent-primary); }
+    .form-input-plain::placeholder { color: var(--static-text-muted); }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 14px;
+      background: var(--static-input-bg);
+      border: 2px solid var(--static-border);
+      border-radius: 12px;
+      color: var(--static-text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .form-select:focus { border-color: var(--static-accent-primary); }
+    .form-select option { background: var(--static-bg-secondary); }
+
+    /* Fetch button */
+    .fetch-btn {
+      padding: 14px 22px;
+      background: linear-gradient(135deg, var(--static-accent-primary), var(--static-accent-secondary));
+      border: none;
+      border-radius: 12px;
+      color: var(--static-bg-primary);
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 14px;
+      transition: opacity 0.2s;
+    }
+
+    .fetch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Platform detected */
+    .platform-detected {
+      font-size: 12px;
+      color: var(--static-accent-secondary);
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* Cover upload */
+    .cover-upload-zone {
+      width: 100%;
+      aspect-ratio: 16/9;
+      max-width: 400px;
+      border-radius: 16px;
+      background: var(--static-input-bg);
+      border: 2px dashed var(--static-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+      margin: 0 auto;
+    }
+
+    .cover-upload-zone:hover { border-color: var(--static-accent-primary); }
+
+    .cover-upload-zone img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cover-placeholder {
+      text-align: center;
+      color: var(--static-text-muted);
+      font-size: 13px;
+      padding: 20px;
+    }
+
+    .cover-placeholder svg {
+      display: block;
+      margin: 0 auto 12px;
+      stroke: var(--static-text-muted);
+      opacity: 0.5;
+    }
+
+    /* Fields row */
+    .fields-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Save button */
+    .save-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--static-accent-primary), var(--static-accent-secondary));
+      border: none;
+      border-radius: 12px;
+      color: var(--static-bg-primary);
+      font-weight: 700;
+      font-size: 16px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .save-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(252,183,144,0.3);
+    }
+
+    .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Success message */
+    .success-msg {
+      display: none;
+      background: rgba(63, 178, 161, 0.1); /* Static secondary accent alpha */
+      border: 1px solid var(--static-accent-secondary);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .success-msg.show { display: block; }
+
+    .success-msg h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      color: var(--static-accent-secondary);
+      margin-bottom: 8px;
+    }
+
+    .success-msg p { color: var(--static-text-secondary); font-size: 14px; margin-bottom: 16px; }
+
+    .success-msg .btn-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      padding: 10px 20px;
+      background: var(--static-input-bg);
+      border: 1px solid var(--static-border);
+      border-radius: 20px;
+      color: var(--static-text-primary);
+      font-size: 14px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: var(--static-accent-primary); }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--static-bg-card);
+      color: var(--static-text-primary);
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid var(--static-border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show { opacity: 1; }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: var(--static-accent-primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .add-nav { padding: 14px 16px; }
+      .add-main { padding: 32px 16px 60px; }
+      .add-card { padding: 24px; }
+      .fields-row { grid-template-columns: 1fr; }
+      .link-input-row { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
-    <div class="utility-container">
-        <button id="dark-mode-toggle" aria-label="Toggle Dark/Light Mode">
-            ☀️
+
+<nav class="add-nav">
+  <div class="add-nav-links">
+    <a href="index.html" class="add-back-link"><img src="Images/Home.png" alt="home"><p>Home</p></a>
+    <a href="browse-community.html" class="add-back-link"><img src="Images/Explore.png" alt="explore"><p>Explore</p></a>
+    <a href="dashboard.html" class="add-back-link"><img src="Images/Dashboard.png" alt="dashboard"><p>Dashboard</p></a>
+    <a href="Browse.html" class="add-back-link"><img src="Images/search-visual.png" alt="search"><p>Find Vibes</p></a>
+  </div>
+</nav>
+<main class="add-main">
+  <div class="add-header">
+    <p class="add-eyebrow">Contribute</p>
+    <h1 class="add-title">Add Your Playlist</h1>
+    <p class="add-subtitle">Share your favorite playlists with the Moodify community. Paste a link from Spotify, YouTube, SoundCloud, or Apple Music.</p>
+  </div>
+
+  <div class="add-card">
+    <form id="add-playlist-form">
+      <!-- Playlist Link -->
+      <div class="form-section">
+        <label class="form-label">Playlist Link <span class="required">*</span></label>
+        <div class="link-input-row">
+          <div class="link-input-wrap">
+            <span class="platform-badge" id="platform-icon">🔗</span>
+            <input
+              class="form-input"
+              id="playlist-url"
+              type="url"
+              placeholder="https://open.spotify.com/playlist/..."
+              required
+              oninput="detectPlatform(this.value)">
+          </div>
+          <button type="button" class="fetch-btn" id="fetch-btn" onclick="fetchInfo()">
+            Fetch Info
+          </button>
+        </div>
+        <div class="platform-detected" id="platform-detected"></div>
+      </div>
+
+      <!-- Cover Art -->
+      <div class="form-section">
+        <label class="form-label">Cover Art (optional)</label>
+        <label class="cover-upload-zone" id="cover-zone">
+          <img id="cover-preview" src="" alt="" style="display:none;">
+          <div class="cover-placeholder" id="cover-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="3"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+            Click to upload a cover image<br>(auto-filled if detected)
+          </div>
+          <input type="file" accept="image/*" style="display:none" onchange="previewCover(this)">
+        </label>
+      </div>
+
+      <!-- Title -->
+      <div class="form-section">
+        <label class="form-label">Title <span class="required">*</span></label>
+        <input class="form-input-plain" id="pl-title" type="text" placeholder="Playlist name" required>
+      </div>
+
+      <!-- Description -->
+      <div class="form-section">
+        <label class="form-label">Description (optional)</label>
+        <textarea class="form-input-plain form-textarea" id="pl-description" placeholder="What makes this playlist special? Who's it for? When should people listen?"></textarea>
+      </div>
+
+      <!-- Genre & Mood -->
+      <div class="form-section">
+        <div class="fields-row">
+          <div>
+            <label class="form-label">Genre</label>
+            <select class="form-select" id="pl-genre">
+              <option value="">Select genre...</option>
+              <option>Afrobeats</option>
+              <option>Amapiano</option>
+              <option>Hip-Hop</option>
+              <option>R&B</option>
+              <option>Pop</option>
+              <option>Gospel</option>
+              <option>Jazz</option>
+              <option>Electronic</option>
+              <option>Dancehall</option>
+              <option>Reggae</option>
+              <option>Drill</option>
+              <option>Soul</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Mood</label>
+            <select class="form-select" id="pl-mood">
+              <option value="">Select mood...</option>
+              <option>Happy</option>
+              <option>Chill</option>
+              <option>Workout</option>
+              <option>Heartbreak</option>
+              <option>Hype</option>
+              <option>Late Night</option>
+              <option>Focus</option>
+              <option>Party</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <button type="submit" class="save-btn" id="save-btn">
+        Save to My Playlists
+      </button>
+    </form>
+
+    <!-- Success Message -->
+    <div class="success-msg" id="success-msg">
+      <h3>✅ Playlist Added!</h3>
+      <p>Your playlist has been saved to your dashboard.</p>
+      <div class="btn-row">
+        <a href="dashboard.html" class="btn-secondary">View Dashboard</a>
+        <button class="btn-secondary" onclick="resetForm()">Add Another</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+<div id="auth-modal-container"></div>
+
+
+<!-- Preview Modal -->
+<div class="preview-modal-overlay" id="preview-modal-overlay">
+  <div class="preview-modal">
+    <div class="preview-modal-header">
+      <h3 class="preview-modal-title">Playlist Preview</h3>
+      <button class="preview-close-btn" onclick="closePreviewModal()">✕</button>
+    </div>
+    <div class="preview-modal-body" id="preview-modal-content">
+      <div class="preview-loading">
+        <div class="spinner"></div>
+        <p style="margin-top: 12px;">Loading preview...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script type="module">
+import { auth } from './firebase-config/firebase-config.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { addPlaylist } from './firebase-config/database.js';
+
+const PLATFORM_ICONS = { spotify: '🎵', youtube: '▶️', soundcloud: '🔶', apple: '🍎' };
+
+const PLATFORM_LABELS = {
+  spotify: 'Spotify detected', youtube: 'YouTube detected',
+  soundcloud: 'SoundCloud detected', apple: 'Apple Music detected'
+};
+
+let currentUser = null;
+let fetchedData = null;
+let coverFile = null;
+
+// Auth check - NO redirect
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  console.log('Auth state:', user ? `Logged in: ${user.email}` : 'Not logged in');
+});
+
+// ✅ FIX: detectPlatform function (matches HTML oninput="detectPlatform(this.value)")
+window.detectPlatform = (url) => {
+  const icon = document.getElementById('platform-icon');
+  const detected = document.getElementById('platform-detected');
+
+  let platform = 'other';
+  if (url.includes('spotify.com')) platform = 'spotify';
+  else if (url.includes('youtube.com') || url.includes('youtu.be')) platform = 'youtube';
+  else if (url.includes('soundcloud.com')) platform = 'soundcloud';
+  else if (url.includes('music.apple.com')) platform = 'apple';
+
+  icon.textContent = PLATFORM_ICONS[platform] || '🔗';
+
+  if (platform !== 'other' && url.length > 10) {
+    detected.textContent = PLATFORM_LABELS[platform];
+    detected.style.display = 'block';
+  } else {
+    detected.style.display = 'none';
+  }
+};
+
+// ✅ FIX: fetchInfo function with preview modal
+window.fetchInfo = async () => {
+  const url = document.getElementById('playlist-url').value.trim();
+  if (!url) {
+    showToast('Please enter a playlist URL first');
+    return;
+  }
+
+  // Check if preview modal exists
+  const modalOverlay = document.getElementById('preview-modal-overlay');
+  const modalContent = document.getElementById('preview-modal-content');
+  
+  if (!modalOverlay || !modalContent) {
+    // Fallback to simple mode if modal not present
+    console.warn('Preview modal not found, using simple mode');
+    await fetchInfoSimple();
+    return;
+  }
+
+  // Open preview modal
+  modalOverlay.classList.add('open');
+  modalContent.innerHTML = `
+    <div class="preview-loading">
+      <div class="spinner"></div>
+      <p style="margin-top: 12px;">Fetching playlist details...</p>
+    </div>
+  `;
+
+  try {
+    // Detect platform
+    let platform = 'other';
+    if (url.includes('spotify.com')) platform = 'spotify';
+    else if (url.includes('youtube.com') || url.includes('youtu.be')) platform = 'youtube';
+    else if (url.includes('soundcloud.com')) platform = 'soundcloud';
+    else if (url.includes('music.apple.com')) platform = 'apple';
+
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    let previewData = null;
+
+    if (!isLocal) {
+      // Production: Try oEmbed
+      try {
+        const res = await fetch(`/.netlify/functions/get-oembed?url=${encodeURIComponent(url)}`);
+        if (res.ok) {
+          previewData = await res.json();
+        }
+      } catch (err) {
+        console.warn('oEmbed failed, using manual entry');
+      }
+    }
+
+    // Fallback to manual entry
+    if (!previewData) {
+      previewData = {
+        platform,
+        title: extractTitleFromURL(url) || 'Unknown Playlist',
+        thumbnail: '',
+        tracks: null,
+        sourceURL: url
+      };
+    }
+
+    fetchedData = { ...previewData, sourceURL: url, platform };
+    renderPreview(previewData);
+
+  } catch (e) {
+    console.error('❌ Fetch error:', e);
+    modalContent.innerHTML = `
+      <div class="preview-error">
+        ⚠️ Could not fetch playlist details. You can still add it manually.
+      </div>
+      <div class="preview-actions">
+        <button class="preview-btn preview-btn-primary" onclick="acceptManualEntry()">
+          Continue Anyway
         </button>
+        <button class="preview-btn preview-btn-secondary" onclick="closePreviewModal()">
+          Cancel
+        </button>
+      </div>
+    `;
+  }
+};
+
+// Simple fallback if modal not present
+async function fetchInfoSimple() {
+  const url = document.getElementById('playlist-url').value.trim();
+  
+  let platform = 'other';
+  if (url.includes('spotify.com')) platform = 'spotify';
+  else if (url.includes('youtube.com') || url.includes('youtu.be')) platform = 'youtube';
+  else if (url.includes('soundcloud.com')) platform = 'soundcloud';
+  else if (url.includes('music.apple.com')) platform = 'apple';
+
+  fetchedData = { platform, sourceURL: url, title: '', thumbnail: '', embedHTML: '' };
+  showToast('Platform detected! Fill in title and details manually.');
+}
+
+// Render preview modal
+function renderPreview(data) {
+  const platform = data.platform || 'other';
+  const platformIcons = { 
+    spotify: '🎵 Spotify', 
+    youtube: '▶️ YouTube', 
+    soundcloud: '🔶 SoundCloud', 
+    apple: '🍎 Apple Music' 
+  };
+  const platformLabel = platformIcons[platform] || '🔗 Other';
+  const platformEmoji = { spotify: '🎵', youtube: '▶️', soundcloud: '🔶', apple: '🍎' }[platform] || '🔗';
+
+  let tracksHTML = '';
+  if (data.tracks && data.tracks.length > 0) {
+    tracksHTML = `
+      <div class="preview-tracks-section">
+        <p class="preview-section-title">Tracks (${data.tracks.length})</p>
+        <div class="preview-track-list">
+          ${data.tracks.slice(0, 10).map((track, i) => `
+            <div class="preview-track-item">
+              <span class="preview-track-num">${i + 1}</span>
+              <div class="preview-track-info">
+                <div class="preview-track-name">${escapeHtml(track.name || track.title || 'Unknown')}</div>
+                <div class="preview-track-artist">${escapeHtml(track.artist || track.artists?.[0] || 'Unknown Artist')}</div>
+              </div>
+              ${track.duration ? `<span class="preview-track-duration">${formatDuration(track.duration)}</span>` : ''}
+            </div>
+          `).join('')}
+          ${data.tracks.length > 10 ? `<div class="preview-track-item" style="justify-content: center; color: var(--static-text-muted);">+ ${data.tracks.length - 10} more tracks</div>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('preview-modal-content').innerHTML = `
+    <div class="preview-cover-section">
+      ${data.thumbnail 
+        ? `<img class="preview-cover" src="${data.thumbnail}" alt="Cover">`
+        : `<div class="preview-cover" style="display: flex; align-items: center; justify-content: center; font-size: 48px;">${platformEmoji}</div>`
+      }
+      <div class="preview-info">
+        <span class="preview-platform">${platformLabel}</span>
+        <h4 class="preview-title">${escapeHtml(data.title || 'Unknown Playlist')}</h4>
+        <p class="preview-desc">${escapeHtml(data.description || 'No description available')}</p>
+      </div>
     </div>
 
-    <header>
-        <nav class="nbar">
-            <a href="index.html" class="logo-t">
-                <h1>Moodify</h1>
-            </a>
-            <img src="Images/icon-menu.svg" alt="menu-open" id="menu-open-btn">
-        </nav>
+    ${tracksHTML}
 
-        <div id="mobile-nav-container">
-            <div id="mobile-nav">
-                <img src="Images/icon-menu-close.svg" alt="close menu" id="menu-close-btn">
-                <a href="index.html" class="playlist-btn">Home</a>
-                <a href="Addyourplaylist.html" class="playlist-btn">Add Your Playlist🎶</a>
-                <div class="social-icons">
-                    <img src="Images/icon-instagram.svg" alt="insta">
-                    <img src="Images/icon-facebook.svg" alt="facebook">
-                    <img src="Images/icon-twitter.svg" alt="X">
-                  </div>
-            </div>
-        </div>
-    </header>
-    <main>
-        <form name="contact" method="POST" data-netlify="true" class="playlist-form" id="Get-response">
-            <input type="hidden" name="form-name" value="contact">
-          
-            <h2>Share Your Playlist 🎶</h2>
-          
-            <label for="name">What’s your name? *</label>
-            <input type="text" id="name" name="name" required>
-          
-            <label for="email">Where can we reach you? (Email) *</label>
-            <input type="email" id="email" name="email" required>
-          
-            <label for="playlist-name">What’s your playlist called? *</label>
-            <input type="text" id="playlist-name" name="playlist-name" required>
-          
-            <label for="playlist-link">Drop your playlist link (Spotify, Apple Music, etc.) *</label>
-            <input type="url" id="playlist-link" name="playlist-link" placeholder="https://..." required>
-          
-            <label for="genre">What’s the main vibe or genre?</label>
-            <select id="genre" name="genre">
-              <option value="">Select Genre</option>
-              <option value="Pop">Pop</option>
-              <option value="Hip-Hop">Hip-Hop</option>
-              <option value="Afrobeats">Afrobeats</option>
-              <option value="Jazz">Jazz</option>
-              <option value="Other">Other</option>
-            </select>
-          
-            <label for="description">Tell us a bit about it — what makes this playlist special?</label>
-            <textarea id="description" name="description" rows="4" placeholder="Why is this playlist awesome?"></textarea>
-          
-            <button type="submit">Submit Playlist</button>
-          </form>
-          
-    </main>
-    <hr>
-    <footer>
-        <span>&copy2025 Moodify. All Right Reserved.</span>
-    </footer>
+    <div class="preview-actions">
+      <button class="preview-btn preview-btn-primary" onclick="usePreviewData()">
+        ✓ Use This Playlist
+      </button>
+      <button class="preview-btn preview-btn-secondary" onclick="closePreviewModal()">
+        Cancel
+      </button>
+    </div>
+  `;
+}
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-  const form = document.getElementById("Get-response");
+// Use preview data
+window.usePreviewData = () => {
+  if (!fetchedData) return;
 
-  form.addEventListener("submit", function(event) {
-    event.preventDefault();
+  if (fetchedData.title) {
+    document.getElementById('pl-title').value = fetchedData.title;
+  }
 
-    const formData = new FormData(form);
+  if (fetchedData.thumbnail) {
+    document.getElementById('cover-preview').src = fetchedData.thumbnail;
+    document.getElementById('cover-preview').style.display = 'block';
+    document.getElementById('cover-placeholder').style.display = 'none';
+  }
 
-    fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(formData).toString()
-    })
-    .then(() => {
-      alert("✅ Thank you! We'll be in touch soon.");
-      form.reset();
-    })
-    .catch((error) => {
-      alert("❌ Oops! Something went wrong: " + error);
-    });
+  closePreviewModal();
+  showToast('✓ Playlist loaded! Add more details below.');
+  document.getElementById('pl-title').focus();
+};
+
+window.acceptManualEntry = () => {
+  closePreviewModal();
+  showToast('Fill in the details manually');
+};
+
+window.closePreviewModal = () => {
+  const modalOverlay = document.getElementById('preview-modal-overlay');
+  if (modalOverlay) modalOverlay.classList.remove('open');
+};
+
+function extractTitleFromURL(url) {
+  const match = url.match(/playlist[\/:]([^\/\?&]+)/i);
+  return match ? match[1].replace(/-|_/g, ' ') : null;
+}
+
+function formatDuration(ms) {
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ✅ Cover preview with base64
+window.previewCover = async (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  
+  try {
+    showToast('Processing image...');
+    const base64 = await imageToBase64(file);
+    coverFile = base64;
+    
+    document.getElementById('cover-preview').src = base64;
+    document.getElementById('cover-preview').style.display = 'block';
+    document.getElementById('cover-placeholder').style.display = 'none';
+    
+    showToast('Image ready!');
+  } catch (e) {
+    showToast('Error: ' + e.message);
+  }
+};
+
+// Convert image to base64
+async function imageToBase64(file) {
+  return new Promise((resolve, reject) => {
+    if (file.size > 1024 * 1024) {
+      reject(new Error('Image too large (max 1MB)'));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width = img.width;
+        let height = img.height;
+        const maxSize = 800;
+        
+        if (width > height && width > maxSize) {
+          height *= maxSize / width;
+          width = maxSize;
+        } else if (height > maxSize) {
+          width *= maxSize / height;
+          height = maxSize;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = () => reject(new Error('Invalid image'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Read failed'));
+    reader.readAsDataURL(file);
   });
+}
+
+// ✅ Form submission with auth check
+document.getElementById('add-playlist-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  // Check auth
+  if (!currentUser) {
+    if (window.openAuthModal) {
+      window.openAuthModal('signin');
+      showToast('Please sign in to save playlists');
+    } else {
+      alert('Please sign in to add playlists');
+    }
+    return;
+  }
+
+  const title = document.getElementById('pl-title').value.trim();
+  if (!title) {
+    showToast('Title is required');
+    return;
+  }
+
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  try {
+    // Use base64 cover if uploaded, otherwise fetched thumbnail
+    let coverURL = coverFile || fetchedData?.thumbnail || '';
+
+    const playlistData = {
+      title,
+      description: document.getElementById('pl-description').value.trim(),
+      genre: document.getElementById('pl-genre').value,
+      mood: document.getElementById('pl-mood').value,
+      coverURL,
+      sourceURL: document.getElementById('playlist-url').value.trim(),
+      platform: fetchedData?.platform || detectPlatformStr(document.getElementById('playlist-url').value),
+      embedHTML: fetchedData?.embedHTML || ''
+    };
+
+    console.log('💾 Saving playlist:', playlistData);
+    const res = await addPlaylist(currentUser.uid, playlistData);
+
+    if (res.success) {
+      document.getElementById('add-playlist-form').style.display = 'none';
+      document.getElementById('success-msg').classList.add('show');
+      showToast('Playlist saved!');
+    } else {
+      throw new Error(res.error);
+    }
+
+  } catch (e) {
+    showToast('Error: ' + e.message);
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save to My Playlists';
+  }
 });
+
+// Reset form
+window.resetForm = () => {
+  document.getElementById('add-playlist-form').reset();
+  document.getElementById('add-playlist-form').style.display = 'block';
+  document.getElementById('success-msg').classList.remove('show');
+  document.getElementById('cover-preview').style.display = 'none';
+  document.getElementById('cover-placeholder').style.display = 'flex';
+  document.getElementById('platform-icon').textContent = '🔗';
+  document.getElementById('platform-detected').style.display = 'none';
+  fetchedData = null;
+  coverFile = null;
+};
+
+function detectPlatformStr(url) {
+  if (url.includes('spotify.com')) return 'spotify';
+  if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+  if (url.includes('soundcloud.com')) return 'soundcloud';
+  if (url.includes('music.apple.com')) return 'apple';
+  return 'other';
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Load auth modal
+fetch('auth-modal.html')
+  .then(r => r.text())
+  .then(html => { 
+    const container = document.getElementById('auth-modal-container');
+    if (container) container.innerHTML = html;
+  })
+  .catch(() => {});
 </script>
 
-    <script src="script.js"></script>
 </body>
 </html>

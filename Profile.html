@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — Moodify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="firebase-config/firebase-config.js"></script>
+  <script type="module" src="auth.js"></script>
+
+<style>
+    :root {
+      /* Palette: Ink Black, Deep Pine, Peach Glow */
+      --p-bg: #081917;             /* Ink Black Base */
+      --p-surface: #0d2b27;        /* Deep Pine Surface */
+      --p-card: #0b2421;           /* Elevated Card */
+      --p-border: rgba(63, 178, 161, 0.2); /* Pine Border */
+      --p-accent: #fcb790;         /* Peach Glow */
+      --p-accent2: #3fb2a1;        /* Teal Accent */
+      --p-text: #f5f5f5;           /* Soft White */
+      --p-muted: #628a84;          /* Muted Pine */
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--p-bg);
+      color: var(--p-text);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    .p-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      border-bottom: 1px solid var(--p-border);
+      position: sticky;
+      top: 0;
+      background: var(--p-bg);
+      z-index: 100;
+    }
+
+    .p-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--p-accent), var(--p-accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    .p-back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--p-surface);
+      border: 1px solid var(--p-border);
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: var(--p-text);
+      font-size: 14px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+
+    .p-back-btn:hover { border-color: var(--p-accent); }
+
+    /* ── BANNER ── */
+    .p-banner {
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(135deg, #0d2b27 0%, #081917 50%, #0b2421 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .p-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .p-banner-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.85);
+      padding: 0 40px;
+      text-align: center;
+      background: rgba(0,0,0,0.2);
+    }
+
+    /* ── PROFILE SECTION ── */
+    .p-profile-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .p-profile-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+      margin-top: -48px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .p-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: 4px solid var(--p-bg);
+      object-fit: cover;
+      background: var(--p-surface);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1; 
+      display: block;
+    }
+
+    .p-name-block { 
+      flex: 1; 
+      padding-bottom: 4px; 
+      min-width: 0;
+      position: relative;
+      z-index: 2; 
+    }
+
+    .p-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: var(--p-text);
+    }
+
+    .p-email { font-size: 14px; color: var(--p-muted); }
+
+    .p-own-badge {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--p-accent2);
+      border: none;
+      border-radius: 20px;
+      color: #081917;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+    }
+
+    /* ── STATS ── */
+    .p-stats {
+      display: flex;
+      gap: 32px;
+      padding: 20px 0 24px;
+      border-bottom: 1px solid var(--p-border);
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+
+    .p-stat-item { text-align: left; }
+
+    .p-stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--p-accent);
+    }
+
+    .p-stat-label {
+      font-size: 12px;
+      color: var(--p-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── PLAYLISTS SECTION ── */
+    .p-section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--p-muted);
+      margin-bottom: 20px;
+    }
+
+    .p-playlists-scroll {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 16px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+    }
+
+    .p-playlists-scroll::-webkit-scrollbar { height: 4px; }
+    .p-playlists-scroll::-webkit-scrollbar-track { background: var(--p-surface); }
+    .p-playlists-scroll::-webkit-scrollbar-thumb { background: var(--p-muted); border-radius: 2px; }
+
+    .p-pl-card {
+      flex-shrink: 0;
+      width: 180px;
+      scroll-snap-align: start;
+      background: var(--p-card);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--p-border);
+      cursor: pointer;
+      transition: transform 0.25s, border-color 0.25s;
+      position: relative;
+    }
+
+    .p-pl-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--p-accent);
+    }
+
+    .p-pl-cover {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+      background: var(--p-surface);
+    }
+
+    .p-pl-cover-placeholder {
+      width: 100%;
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, var(--p-surface), var(--p-bg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    .p-pl-platform {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 14px;
+      background: rgba(0,0,0,0.65);
+      border-radius: 6px;
+      padding: 3px 5px;
+    }
+
+    .p-pl-body { padding: 12px; }
+
+    .p-pl-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+      color: var(--p-text);
+    }
+
+    .p-pl-genre {
+      font-size: 11px;
+      color: var(--p-accent2);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    /* ── STATES ── */
+    .p-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+      color: var(--p-muted);
+      gap: 12px;
+    }
+
+    .p-center h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      color: var(--p-text);
+    }
+
+    .p-empty {
+      padding: 40px 0;
+      color: var(--p-muted);
+      font-size: 15px;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--p-border);
+      border-top-color: var(--p-accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    
+    .pf-platform-display { 
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .pf-platform-display img {
+        display: block;
+        object-fit: contain;
+        width: 10px;
+        height: 10px;
+    }
+
+    .pf-platform-icon {
+        width: 20px !important;
+        height: 20px !important;
+        object-fit: contain;
+        position: absolute;
+        right: 5px;
+        top: 95%;
+        transform: translateY(-50%);
+        pointer-events: none; 
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .p-nav { padding: 14px 16px; }
+      .p-banner { height: 160px; }
+      .p-profile-wrap { padding: 0 16px; }
+      .p-name { font-size: 22px; }
+    }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="p-nav">
+  <a href="browse-community.html" class="p-back-btn">
+    ← Explore
+  </a>
+</nav>
+
+<!-- MAIN -->
+<div id="p-main">
+  <div class="p-center">
+    <div class="spinner"></div>
+    <p>Loading profile...</p>
+  </div>
+</div>
+
+<div id="auth-modal-container"></div>
+
+<script type="module">
+import { auth } from './firebase-config/firebase-config.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { getUserProfile, getUserPlaylists, incrementProfileViews, recordPlay } from './firebase-config/database.js';
+
+const PLATFORM_ICONS = {
+  spotify: `<img src="https://cdn.simpleicons.org/spotify/1DB954" class="pf-platform-icon" alt="Spotify">`,
+  youtube: `<img src="https://cdn.simpleicons.org/youtube/FF0000" class="pf-platform-icon" alt="YouTube">`,
+  soundcloud: `<img src="https://cdn.simpleicons.org/soundcloud/FF5500" class="pf-platform-icon" alt="SoundCloud">`,
+  apple: `<img src="https://cdn.simpleicons.org/applemusic/FA243C" class="pf-platform-icon" alt="Apple Music">`,
+  other: `<img src="https://cdn.simpleicons.org/linktree/19E467" class="pf-platform-icon" alt="Link">` 
+};
+
+// Get user ID from URL
+const params = new URLSearchParams(window.location.search);
+const profileUserId = params.get('user');
+
+let currentAuthUser = null;
+
+onAuthStateChanged(auth, (user) => {
+  currentAuthUser = user;
+  console.log('🔐 Auth state:', user ? user.uid : 'Not logged in');
+});
+
+// Load the profile
+async function loadProfile() {
+  const main = document.getElementById('p-main');
+
+  if (!profileUserId) {
+    main.innerHTML = `
+      <div class="p-center">
+        <h2>Profile not found</h2>
+        <p>No user ID was provided.</p>
+        <a href="browse-community.html" class="p-back-btn" style="margin-top:16px">← Back to Community</a>
+      </div>`;
+    return;
+  }
+
+  const [profileResult, playlistsResult] = await Promise.all([
+    getUserProfile(profileUserId),
+    getUserPlaylists(profileUserId)
+  ]);
+
+  if (!profileResult.success) {
+    main.innerHTML = `
+      <div class="p-center">
+        <h2>User not found</h2>
+        <p>This profile doesn't exist or has been removed.</p>
+        <a href="browse-community.html" class="p-back-btn" style="margin-top:16px">← Back</a>
+      </div>`;
+    return;
+  }
+
+  const profile = profileResult.data;
+  const playlists = (playlistsResult.playlists || []).filter(p => p.isPublic !== false);
+
+  // Track view (not own profile)
+  if (!currentAuthUser || currentAuthUser.uid !== profileUserId) {
+    incrementProfileViews(profileUserId);
+  }
+
+  // Is this the logged-in user's own profile?
+  const isOwn = currentAuthUser && currentAuthUser.uid === profileUserId;
+
+  // Default avatar as base64 SVG
+  const defaultAvatar = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23333%22 width=%22100%22 height=%22100%22/%3E%3Ctext fill=%22%23ccc%22 font-size=%2240%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.35em%22%3E👤%3C/text%3E%3C/svg%3E';
+
+  // Render
+  main.innerHTML = `
+    <!-- Banner -->
+    <div class="p-banner" id="profile-banner">
+      ${profile.bannerURL
+        ? `<img src="${profile.bannerURL}" alt="Banner">`
+        : profile.bannerText
+          ? `<div class="p-banner-text">${escHtml(profile.bannerText)}</div>`
+          : ''
+      }
+    </div>
+
+    <div class="p-profile-wrap">
+      <!-- Profile row -->
+      <div class="p-profile-row">
+        <img class="p-avatar"
+          src="${profile.photoURL || defaultAvatar}"
+          alt="${escHtml(profile.displayName || 'User')}"
+          onerror="this.src='${defaultAvatar}'">
+
+        <div class="p-name-block">
+          <div class="p-name">${escHtml(profile.displayName || 'Anonymous')}</div>
+          <div class="p-email">${escHtml(profile.email || '')}</div>
+        </div>
+
+        ${isOwn ? `<a href="dashboard.html" class="p-own-badge" style="display:flex;">
+          Edit Profile
+        </a>` : ''}
+      </div>
+
+      <!-- Stats -->
+      <div class="p-stats">
+        <div class="p-stat-item">
+          <div class="p-stat-num">${profile.stats?.totalPlaylists || playlists.length}</div>
+          <div class="p-stat-label">Playlists</div>
+        </div>
+        <div class="p-stat-item">
+          <div class="p-stat-num">${profile.stats?.totalPlays || 0}</div>
+          <div class="p-stat-label">Total Plays</div>
+        </div>
+        <div class="p-stat-item">
+          <div class="p-stat-num">${profile.stats?.profileViews || 0}</div>
+          <div class="p-stat-label">Profile Views</div>
+        </div>
+      </div>
+
+      <!-- Playlists -->
+      <p class="p-section-title">Playlists</p>
+      ${playlists.length ? `
+      <div class="p-playlists-scroll">
+        ${playlists.map(pl => `
+        <div class="p-pl-card" onclick="openPlaylistLink('${escHtml(pl.sourceURL || '')}', '${pl.id}')">
+          <span class="p-pl-platform">${PLATFORM_ICONS[pl.platform] || '🔗'}</span>
+          ${pl.coverURL
+            ? `<img class="p-pl-cover" src="${escHtml(pl.coverURL)}" alt="${escHtml(pl.title)}" loading="lazy">`
+            : `<div class="p-pl-cover-placeholder">${PLATFORM_ICONS[pl.platform] || '🎵'}</div>`
+          }
+          <div class="p-pl-body">
+            <div class="p-pl-title">${escHtml(pl.title)}</div>
+            <div class="p-pl-genre">${escHtml(pl.genre || '')}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+      ` : `<p class="p-empty">No public playlists yet.</p>`}
+
+      <!-- Spacer -->
+      <div style="height: 80px;"></div>
+    </div>
+  `;
+}
+
+window.openPlaylistLink = (url, playlistId) => {
+  if (playlistId) recordPlay(playlistId, currentAuthUser?.uid || null);
+  if (url) window.open(url, '_blank');
+};
+
+function escHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ✅ FIXED: goToMyProfile with modular Firebase
+window.goToMyProfile = function() {
+  console.log('🔍 goToMyProfile called');
+  
+  const user = auth.currentUser;
+  
+  if (user) {
+    console.log('✅ User found:', user.uid);
+    window.location.href = `profile.html?user=${user.uid}`;
+  } else {
+    console.error('❌ No user logged in');
+    // Open auth modal instead of alert
+    if (typeof window.openAuthModal === 'function') {
+      window.openAuthModal('signin');
+    } else {
+      alert('Please sign in first');
+    }
+  }
+};
+
+console.log('✅ goToMyProfile function defined');
+
+// Load auth modal
+fetch('auth-modal.html')
+  .then(r => r.text())
+  .then(html => { document.getElementById('auth-modal-container').innerHTML = html; })
+  .catch(() => {});
+
+loadProfile();
+</script>
+
+
+</body>
+</html>

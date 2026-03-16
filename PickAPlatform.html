@@ -4,87 +4,160 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Browse</title>
+        <script type="module" src="firebase-config/firebase-config.js"></script>
+        <script type="module" src="auth.js"></script>
         <link rel="stylesheet" href="style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Young+Serif&display=swap" rel="stylesheet">
     </head>
 <body>
-    <div class="utility-container">
-        <button id="dark-mode-toggle" aria-label="Toggle Dark/Light Mode">
-            ☀️
-        </button>
-    </div>
 
     <header>
         <nav class="nbar">
-            <a href="index.html" class="logo-t">
-                <h1>Moodify</h1>
-            </a>
-            <img src="Images/icon-menu.svg" alt="menu-open" id="menu-open-btn">
+            <a href="index.html" class="logo-t"><h1>Fluence</h1></a>
+
+            <button class="theme-toggle" id="dark-mode-toggle" aria-label="Toggle Dark/Light Mode">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+            </button>
+
+            <img src="Images/icon-hamburger.svg" alt="menu-open" id="menu-open-btn">
         </nav>
 
         <div id="mobile-nav-container">
             <div id="mobile-nav">
-                <img src="Images/icon-menu-close.svg" alt="close menu" id="menu-close-btn">
-                <a href="index.html" class="playlist-btn">Home</a>
-                <a href="Addyourplaylist.html" class="playlist-btn">Add Your Playlist🎶</a>
-                <div class="social-icons">
-                    <img src="Images/icon-instagram.svg" alt="insta">
-                    <img src="Images/icon-facebook.svg" alt="facebook">
-                    <img src="Images/icon-twitter.svg" alt="X">
+                <img src="Images/icon-close.svg" alt="close menu" id="menu-close-btn">
+                <a href="index.html" class="playlist-btn sight move"><img src="Images/Home.png" alt="home"><p>Home</p></a>
+                <a href="Addyourplaylist.html" class="playlist-btn sight"><img src="Images/Library.png" alt="add-playlist"><p>Add Your Playlist</p></a>
+
+                <a href="browse-community.html" class="playlist-btn hidden" data-auth-required style="display:none;">
+                  <img src="Images/Explore.png" alt="explore"><p>Explore</p>
+                </a>
+
+                <a href="dashboard.html" class="playlist-btn hidden" data-auth-required style="display:none;"><img src="Images/Dashboard.png" alt="dashboard"><p>Dashboard</p></a>
+
+                  <!-- ✅ AUTH BUTTON (shows when NOT logged in) -->
+                <button id="signin-btn" data-no-auth onclick="openAuthModal('signin')" style="background: var(--bg-secondary); border: none; padding: 12px 24px; border-radius: 20px; color: white; cursor: pointer; font-weight: 600; margin-top: 20px; width: 100%;">
+                   Sign In
+                </button>
+
+                <!-- ✅ USER PROFILE SECTION (shows when logged in) -->
+                <div id="user-profile-section" data-auth-required style="display: none; margin-top: 20px;">
+                  
+                  <!-- User Avatar & Info (clickable - goes to profile) -->
+                  <div onclick="goToMyProfile()" style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px; background: rgba(128, 128, 128, 0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 12px; cursor: pointer; border: none; margin-bottom: 12px; transition: transform 0.2s;">
+                    
+                    <!-- Avatar -->
+                    <img data-user-photo 
+                        style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: none;" 
+                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23333' width='100' height='100'/%3E%3Ctext fill='%23ccc' font-size='40' x='50%25' y='50%25' text-anchor='middle' dy='.35em'%3E👤%3C/text%3E%3C/svg%3E"
+                        alt="Profile">
+                    
+                    <!-- User Info -->
+                    <div style="flex: 1; min-width: 0;">
+                      <div data-user-name style="font-weight: 700; color: var(--text-primary); font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                      <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">View Profile →</div>
+                    </div>
                   </div>
+                  
+                  <!-- Logout Button (direct - no dropdown) -->
+                  <button onclick="signOutUser()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #ff6b6b, #ee5a6f); border: none; border-radius: 12px; color: white; cursor: pointer; font-weight: 700; text-align: center; font-size: 15px; transition: transform 0.2s;">
+                    🚪 Sign Out
+                  </button>
+                  
+                </div>
+
+              <div class="social-icons">
+                <a href="https://www.instagram.com/posixoxo_/"><img src="Images/icon-instagram.svg" alt="instagram"></a>
+                <a href="javascipt.void"><img src="Images/icon-facebook.svg" alt="facebook"></a>
+                <a href="https://x.com/PosiXoxo"><img src="Images/icon-twitter.svg" alt="X"></a>
+              </div>
             </div>
         </div>
+        
     </header>
 
     <main>
         <section>
-            <div class="top-image">
-            <img src="Images/apple-music (1).svg" alt="AP-1" class="APP-1">
-            <img src="Images/Airpods.png" alt="AP-2" class="APP-1">
-            </div>
-
 
             <div class="container">
-                <h2>Choose Your Prefered Music Service</h2>
+                <h2>Choose Your Preferred Music Service</h2>
                 <div class="logos-link">
-                    <img src="Images/apple-music.svg" alt="AP-3" class="logo" id="apple">
-                    <img src="Images/spotify.svg" alt="SP" class="logo" id="spotify">
-                    <img src="Images/audiomack.svg" alt="AUD" class="logo" id="audiomack">
+                    <img src="Images/apple-music.svg" alt="Apple Music" class="logo" id="apple" title="Apple Music">
+                    <img src="Images/spotify.svg" alt="Spotify" class="logo" id="spotify" title="Spotify">
+                    <img src="Images/YT.png" alt="YouTube" class="logo" id="youtube" title="YouTube Music">
+                    <img src="Images/soundcloud.png" alt="soundcloud" class="logo" id="soundcloud" title="SoundCloud">
                 </div>
+                
+                <!-- ✅ EMPTY CONTAINER - No iframe by default! -->
                 <div id="player-container" class="player-container"></div>
             </div>
 
-            <div class="top-image">
-                <img src="Images/Apple Music.png" alt="AP-4" class="APP-1">
-                <img src="Images/Accessories.png" alt="Accessories" class="APP-1">
-            </div>
         </section>
     </main>
 
     <hr>
     <footer>
-        <span>&copy2025 Moodify. All Right Reserved.</span>
+        <span>&copy2025 Fluence. All Right Reserved.</span>
     </footer>
 
 <script src="script.js"></script>
+
+<!--  Moves MOOD_PLAYLISTS here, iframe loads ONLY on click -->
 <script>
+    // Get mood from localStorage
     const mood = localStorage.getItem('selectedMood');
+    console.log('Selected mood:', mood);
+  
+    // Get elements
     const spotifyButton = document.getElementById('spotify');
     const appleButton = document.getElementById('apple');
-    const audiomackButton = document.getElementById('audiomack');
+    const youtubeButton = document.getElementById('youtube');
+    const soundcloudButton = document.getElementById('soundcloud');
     const playerContainer = document.getElementById('player-container');
   
-    // 🎧 Mood → Spotify Playlist Mapping
-    const moodPlaylists = {
-      happy: "https://open.spotify.com/embed/playlist/37i9dQZF1DXdPec7aLTmlC",
-      chill: "https://open.spotify.com/embed/playlist/37i9dQZF1DX889U0CL85jj",
-      workout: "https://open.spotify.com/embed/playlist/37i9dQZF1DX70RN3TfWWJh",
-      heartbreak: "https://open.spotify.com/embed/playlist/37i9dQZF1DX7qK8ma5wgG1"
+    //  Mood to platform mapping
+    const MOOD_PLAYLISTS = {
+      happy: {
+        spotify: "https://open.spotify.com/embed/playlist/37i9dQZF1DXdPec7aLTmlC",
+        youtube: "PL4fGSI1pDJn5S09aId3dUGp40ygOk_v18",
+        soundcloud: "https://soundcloud.com/search?q=happy%20music",
+        description: "Feel-good vibes to brighten your day"
+      },
+      chill: {
+        spotify: "https://open.spotify.com/embed/playlist/37i9dQZF1DX889U0CL85jj",
+        youtube: "PLFgquLnL59alW3xmYiWRaoz0oM3H17Lth",
+        soundcloud: "https://soundcloud.com/search?q=chill%20music",
+        description: "Relax and unwind with these chill beats"
+      },
+      workout: {
+        spotify: "https://open.spotify.com/embed/playlist/37i9dQZF1DX70RN3TfWWJh",
+        youtube: "PLw-VjHDlEOgs658kAHR_LAaILBXb-s6Q5",
+        soundcloud: "https://soundcloud.com/search?q=workout%20music",
+        description: "Get pumped with high-energy tracks"
+      },
+      heartbreak: {
+        spotify: "https://open.spotify.com/embed/playlist/37i9dQZF1DX7qK8ma5wgG1",
+        youtube: "PLrEnWoR732-BHrPp_Pm8_VleD68f9s14-",
+        soundcloud: "https://soundcloud.com/search?q=sad%20music",
+        description: "Songs for when you're feeling down"
+      }
     };
   
-    // Helper: fade out then replace content smoothly
+    // Helper: Fade out then replace content
     function replacePlayerContent(html) {
       if (!playerContainer) return;
       playerContainer.style.opacity = "0";
@@ -94,42 +167,320 @@
       }, 200);
     }
   
-    // 🟢 Spotify Player
-    spotifyButton.addEventListener('click', () => {
-      const playlistUrl = moodPlaylists[mood];
-      if (playlistUrl) {
+    // ✅ SPOTIFY PLAYER
+    if (spotifyButton) {
+      spotifyButton.addEventListener('click', () => {
+        console.log('Spotify clicked');
+        
+        const playlistData = MOOD_PLAYLISTS[mood];
+        
+        if (playlistData && playlistData.spotify) {
+          replacePlayerContent(`
+            <div class="player-header" style="text-align:center; margin-bottom:20px; animation: fadeIn 0.5s ease;">
+              <div class="platform-badge-large" style="display:inline-block; width:60px; height:60px; border-radius:50%; background:#1DB954; display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 16px; box-shadow: 0 8px 24px rgba(29, 185, 84, 0.4);">
+                <img src="Images/spotify.svg" alt="Spotify" style="width:30px; height:auto;">
+              </div>
+              <h3 style="font-family: 'Syne', sans-serif; font-size:20px; color:var(--text-primary); margin:0;">
+                ${playlistData.description}
+              </h3>
+            </div>
+            <iframe 
+              src="${playlistData.spotify}" 
+              width="100%" 
+              height="480" 
+              frameborder="0" 
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+              loading="lazy" 
+              style="border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+            </iframe>
+            <p class="player-footer" style="text-align:center; margin-top:16px; color:var(--text-muted); font-size:14px; font-weight:600;">
+              🎵 Playing on Spotify • ${mood ? mood.charAt(0).toUpperCase() + mood.slice(1) : 'Music'} mood
+            </p>
+          `);
+        } else {
+          replacePlayerContent(`
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+              <p style="font-size: 18px;">No Spotify playlist available</p>
+              <p style="font-size: 14px; margin-top: 8px;">Try a different mood!</p>
+            </div>
+          `);
+        }
+      });
+    }
+  
+    // ✅ YOUTUBE PLAYER
+    if (youtubeButton) {
+      youtubeButton.addEventListener('click', () => {
+        console.log('YouTube clicked');
+        
+        const playlistData = MOOD_PLAYLISTS[mood];
+        
+        if (playlistData && playlistData.youtube) {
+          replacePlayerContent(`
+            <div class="player-header" style="text-align:center; margin-bottom:20px; animation: fadeIn 0.5s ease;">
+              <div class="platform-badge-large" style="display:inline-block; width:60px; height:60px; border-radius:50%; background:#FF0000; display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 16px; box-shadow: 0 8px 24px rgba(255, 0, 0, 0.4);">
+                <img src="Images/YT.png" alt="YouTube" style="width:30px; height:auto;">
+              </div>
+              <h3 style="font-family: 'Syne', sans-serif; font-size:20px; color:var(--text-primary); margin:0;">
+                ${playlistData.description}
+              </h3>
+            </div>
+            <iframe 
+              width="100%" 
+              height="480" 
+              src="https://www.youtube.com/embed/videoseries?list=${playlistData.youtube}" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen
+              style="border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+            </iframe>
+            <p class="player-footer" style="text-align:center; margin-top:16px; color:var(--text-muted); font-size:14px; font-weight:600;">
+              ▶️ Playing on YouTube • ${mood ? mood.charAt(0).toUpperCase() + mood.slice(1) : 'Music'} mood
+            </p>
+          `);
+        } else {
+          replacePlayerContent(`
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+              <p style="font-size: 18px;">No YouTube playlist available</p>
+              <p style="font-size: 14px; margin-top: 8px;">Try a different mood!</p>
+            </div>
+          `);
+        }
+      });
+    }
+  
+    // ✅ SOUNDCLOUD LINK
+    if (soundcloudButton) {
+      soundcloudButton.addEventListener('click', () => {
+        console.log('SoundCloud clicked');
+        
+        const playlistData = MOOD_PLAYLISTS[mood];
+        
+        if (playlistData && playlistData.soundcloud) {
+          // SoundCloud doesn't support iframe embeds for search results
+          // Open in new tab instead
+          replacePlayerContent(`
+            <div class="player-header" style="text-align:center; margin-bottom:20px; animation: fadeIn 0.5s ease;">
+              <div class="platform-badge-large" style="display:inline-block; width:60px; height:60px; border-radius:50%; background:#FF5500; display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 16px; box-shadow: 0 8px 24px rgba(255, 85, 0, 0.4);">
+               <img src="Images/soundcloud.png" alt="SoundCloud" style="width:30px; height:auto;">
+              </div>
+              <h3 style="font-family: 'Syne', sans-serif; font-size:20px; color:var(--text-primary); margin:0;">
+                ${playlistData.description}
+              </h3>
+            </div>
+            <div style="text-align:center; padding: 40px 20px;">
+              <p style="margin-bottom: 20px; color: var(--text-muted);">
+                Discover ${mood} music on SoundCloud
+              </p>
+              <a href="${playlistData.soundcloud}" target="_blank" rel="noopener noreferrer" 
+                 style="display:inline-block; padding:16px 32px; background:#FF5500; color:white; text-decoration:none; border-radius:12px; font-weight:700; font-size:16px; box-shadow: 0 6px 20px rgba(255, 85, 0, 0.4); transition: transform 0.2s;"
+                 onmouseover="this.style.transform='translateY(-2px)'" 
+                 onmouseout="this.style.transform='translateY(0)'">
+                Open SoundCloud
+              </a>
+            </div>
+            <p class="player-footer" style="text-align:center; margin-top:16px; color:var(--text-muted); font-size:14px; font-weight:600;">
+              🔊 Browse on SoundCloud • ${mood ? mood.charAt(0).toUpperCase() + mood.slice(1) : 'Music'} mood
+            </p>
+          `);
+        } else {
+          replacePlayerContent(`
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+              <p style="font-size: 18px;">No SoundCloud link available</p>
+              <p style="font-size: 14px; margin-top: 8px;">Try a different mood!</p>
+            </div>
+          `);
+        }
+      });
+    }
+  
+    // ✅ APPLE MUSIC (Coming Soon)
+    if (appleButton) {
+      appleButton.addEventListener('click', () => {
+        console.log('Apple Music clicked');
+        
         replacePlayerContent(`
-          <iframe 
-            src="${playlistUrl}" 
-            width="100%" 
-            height="480" 
-            frameborder="0" 
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-            loading="lazy" 
-            style="border-radius: 16px;">
-          </iframe>`);
+          <div class="coming-soon-card" style="background: var(--bg-secondary); border-radius: 20px; padding: 60px 40px; text-align: center; border: 2px solid rgba(255, 255, 255, 0.05); animation: fadeIn 0.5s ease;">
+            <div class="platform-badge-large" style="display:inline-block; width:80px; height:80px; border-radius:50%; background:#FA243C; display:flex; align-items:center; justify-content:center; font-size:40px; margin:0 auto 20px; box-shadow: 0 8px 24px rgba(250, 36, 60, 0.4);">
+              <img src="Images/apple-music.svg" alt="Apple Music" style="width:20px; height:auto;">
+            </div>
+            <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 20px;">
+              Apple Music integration coming soon!
+            </p>
+            <p style="color: var(--text-muted); font-size: 14px;">
+              For now, enjoy Spotify, YouTube, and SoundCloud playlists curated for your mood. Stay tuned for updates!
+            </p>
+          </div>
+        `);
+      });
+    }
+  
+    //  NO AUTO-PLAY - User must click a button!
+    // Container stays empty until user clicks
+</script>
+  
+<!-- Load Auth Modal Dynamically -->
+<div id="auth-modal-container"></div>
+
+<script type="module">
+// DEFINE GLOBAL AUTH FUNCTIONS FIRST
+import { signUp, signIn, signInWithGoogle, resetPassword } from './auth.js';
+
+window.handleGoogleSignIn = async () => {
+  const result = await signInWithGoogle();
+  if (result.success) {
+    closeAuthModal();
+    showToast('Signed in with Google!');
+  } else {
+    alert('Google sign in failed: ' + result.error);
+  }
+};
+
+window.switchAuthTab = (tab) => {
+  document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
+  const form = document.getElementById(`${tab}-form`);
+  if (form) form.style.display = 'block';
+  
+  document.querySelectorAll('.auth-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  
+  document.querySelectorAll('.auth-error, .auth-success').forEach(e => {
+    if (e) e.style.display = 'none';
+  });
+};
+
+function showToast(message) {
+  const toast = document.getElementById('success-toast');
+  if (toast) {
+    const msgEl = document.getElementById('toast-message');
+    if (msgEl) msgEl.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  }
+}
+window.showToast = showToast;
+
+fetch('auth-modal.html')
+  .then(response => response.text())
+  .then(html => {
+    document.getElementById('auth-modal-container').innerHTML = html;
+    setTimeout(initAuthHandlers, 100);
+  })
+  .catch(error => {
+    console.error('❌ Failed to load auth modal:', error);
+  });
+
+function initAuthHandlers() {
+  const signinForm = document.getElementById('signin-form-element');
+  if (signinForm) {
+    signinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signin-email').value;
+      const password = document.getElementById('signin-password').value;
+      const errorEl = document.getElementById('signin-error');
+      const btn = e.target.querySelector('button[type="submit"]');
+      
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      errorEl.style.display = 'none';
+      
+      const result = await signIn(email, password);
+      
+      if (result.success) {
+        closeAuthModal();
+        showToast('Welcome back!');
+        e.target.reset();
       } else {
-        replacePlayerContent(`<p style="color:#ccc;">No playlist found for that mood yet.</p>`);
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    });
+  }
+
+  const signupForm = document.getElementById('signup-form-element');
+  if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const errorEl = document.getElementById('signup-error');
+      const btn = e.target.querySelector('button[type="submit"]');
+      
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+      errorEl.style.display = 'none';
+      
+      const result = await signUp(email, password, name);
+      
+      if (result.success) {
+        closeAuthModal();
+        showToast('Account created! Welcome!');
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    });
+  }
+
+  const resetForm = document.getElementById('reset-form-element');
+  if (resetForm) {
+    resetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('reset-email').value;
+      const errorEl = document.getElementById('reset-error');
+      const successEl = document.getElementById('reset-success');
+      
+      const result = await resetPassword(email);
+      
+      if (result.success) {
+        successEl.textContent = 'Reset email sent! Check your inbox.';
+        successEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+        successEl.style.display = 'none';
       }
     });
+  }
+}
+
+window.toggleUserMenu = () => {
+  const dropdown = document.getElementById('user-dropdown');
+  if (dropdown) {
+    const isVisible = dropdown.style.display === 'block';
+    dropdown.style.display = isVisible ? 'none' : 'block';
+  }
+};
+</script>
+
+<script type="module">
+import { auth } from './firebase-config/firebase-config.js';
+
+window.goToMyProfile = function() {
+  const user = auth.currentUser;
   
-    // 🍎 Apple Music Placeholder
-    appleButton.addEventListener('click', () => {
-      replacePlayerContent(`
-        <div class="coming-soon-card">
-          <img src="Images/apple-music-logo.png" alt="Apple Music" class="coming-soon-logo">
-          <p>Apple Music integration coming soon 🎶</p>
-        </div>`);
-    });
+  if (user) {
+    window.location.href = `profile.html?user=${user.uid}`;
+  } else {
+    if (typeof window.openAuthModal === 'function') {
+      window.openAuthModal('signin');
+    } else {
+      alert('Please sign in first');
+    }
+  }
+};
+</script>
   
-    // 🎵 Audiomack Placeholder
-    audiomackButton.addEventListener('click', () => {
-      replacePlayerContent(`
-        <div class="coming-soon-card">
-          <img src="Images/audiomack-logo.png" alt="Audiomack" class="coming-soon-logo">
-          <p>Audiomack integration coming soon 🎧</p>
-        </div>`);
-    });
-  </script>  
 </body>
 </html>

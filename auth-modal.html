@@ -1,0 +1,456 @@
+<!-- Auth Modal -->
+<div id="auth-modal" class="auth-modal" style="display: none;">
+  <div class="auth-modal-overlay" onclick="closeAuthModal()"></div>
+  
+  <div class="auth-modal-content">
+    <!-- Close Button -->
+    <button class="auth-close" onclick="closeAuthModal()">✕</button>
+    
+    
+    <!-- Sign In Form -->
+    <div id="signin-form" class="auth-form">
+      <h2>Welcome Back!</h2>
+      <p>Please enter your email & password to signin.</p>
+      <form id="signin-form-element">
+
+        <div class="input-group">
+          <img src="Images/mail-01.png" alt="mail" class="input-icon">
+          <input type="email" id="signin-email" placeholder="Email" required>
+        </div>
+
+        <div class="input-group">
+          <img src="Images/Label.png" alt="label" class="input-icon">
+          <input type="password" id="signin-password" placeholder="Password" required>
+        </div>
+
+        <button type="submit" class="auth-btn">Sign In</button>
+      </form>
+      
+      <button class="google-btn" onclick="handleGoogleSignIn()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+        Continue with Google
+      </button>
+      
+      <p class="auth-link">
+        <a href="#" onclick="switchAuthTab('reset'); return false;">Forgot password?</a>
+      </p>
+      
+      <div id="signin-error" class="auth-error" style="display: none;"></div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">Don't have an account? <p>Sign up</p></button>
+    </div>
+
+    </div>
+    
+    <!-- Sign Up Form -->
+    <div id="signup-form" class="auth-form" style="display: none;">
+      <h2>Create Account</h2>
+      <form id="signup-form-element">
+        <input type="text" id="signup-name" placeholder="Display Name" required>
+
+          <div class="input-group">
+            <img src="Images/mail-01.png" alt="mail" class="input-icon">
+            <input type="email" id="signup-email" placeholder="Email" required>
+          </div>
+
+          <div class="input-group">
+            <img src="Images/Label.png" alt="label" class="input-icon">
+            <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required>
+          </div>
+
+        <button type="submit" class="auth-btn">Create Account</button>
+      </form>
+      
+      <button class="google-btn" onclick="handleGoogleSignIn()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+        Continue with Google
+      </button>
+      
+      <div id="signup-error" class="auth-error" style="display: none;"></div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="signin" onclick="switchAuthTab('signin')">Already an account? <p>Login</p></button>
+    </div>
+
+    </div>
+    
+    <!-- Password Reset Form -->
+    <div id="reset-form" class="auth-form" style="display: none;">
+      <h2>Reset Password</h2>
+      <form id="reset-form-element">
+        <input type="email" id="reset-email" placeholder="Email" required>
+        <button type="submit" class="auth-btn">Send Reset Link</button>
+      </form>
+      
+      <p class="auth-link">
+        <a href="#" onclick="switchAuthTab('signin'); return false;">← Back to Sign In</a>
+      </p>
+      
+      <div id="reset-error" class="auth-error" style="display: none;"></div>
+      <div id="reset-success" class="auth-success" style="display: none;"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Success Toast -->
+<div id="success-toast" style="display: none; position: fixed; bottom: 20px; right: 20px; background: #1DB954; color: white; padding: 15px 20px; border-radius: 10px; z-index: 100000;">
+  <span id="toast-message">Success!</span>
+</div>
+
+<script type="module">
+
+import { signUp, signIn, signInWithGoogle, resetPassword } from './auth.js';
+
+// ✅ DEFINE FUNCTIONS FIRST (before DOM loads)
+window.handleGoogleSignIn = async () => {
+  const result = await signInWithGoogle();
+  if (result.success) {
+    closeAuthModal();
+    showToast('Signed in with Google!');
+  }
+};
+
+window.switchAuthTab = (tab) => {
+  document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
+  const form = document.getElementById(`${tab}-form`);
+  if (form) form.style.display = 'block';
+  
+  document.querySelectorAll('.auth-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  
+  // Clear errors
+  document.querySelectorAll('.auth-error, .auth-success').forEach(e => {
+    if (e) e.style.display = 'none';
+  });
+};
+
+function showToast(message) {
+  const toast = document.getElementById('success-toast');
+  if (toast) {
+    const msgEl = document.getElementById('toast-message');
+    if (msgEl) msgEl.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  }
+}
+
+// ✅ THEN ATTACH FORM HANDLERS
+function initAuthHandlers() {
+  // Sign In Handler
+  const signinForm = document.getElementById('signin-form-element');
+  if (signinForm) {
+    signinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signin-email').value;
+      const password = document.getElementById('signin-password').value;
+      const errorEl = document.getElementById('signin-error');
+      const btn = e.target.querySelector('button[type="submit"]');
+      
+      if (!btn) return;
+      
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      errorEl.style.display = 'none';
+      
+      const result = await signIn(email, password);
+      
+      if (result.success) {
+        closeAuthModal();
+        showToast('Welcome back!');
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    });
+  }
+
+  // Sign Up Handler
+  const signupForm = document.getElementById('signup-form-element');
+  if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const errorEl = document.getElementById('signup-error');
+      const btn = e.target.querySelector('button[type="submit"]');
+      
+      if (!btn) return;
+      
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+      errorEl.style.display = 'none';
+      
+      const result = await signUp(email, password, name);
+      
+      if (result.success) {
+        closeAuthModal();
+        showToast('Account created! Welcome!');
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    });
+  }
+
+  // Password Reset Handler
+  const resetForm = document.getElementById('reset-form-element');
+  if (resetForm) {
+    resetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('reset-email').value;
+      const errorEl = document.getElementById('reset-error');
+      const successEl = document.getElementById('reset-success');
+      
+      const result = await resetPassword(email);
+      
+      if (result.success) {
+        successEl.textContent = 'Reset email sent! Check your inbox.';
+        successEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+        successEl.style.display = 'none';
+      }
+    });
+  }
+}
+
+// ✅ INITIALIZE WHEN MODAL IS LOADED
+setTimeout(initAuthHandlers, 200);
+</script>
+
+<style>
+
+/* ✅ FIXED: Proper z-index hierarchy */
+.auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999; /* ← HIGHER than auth gate (10000) */
+}
+
+.auth-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1;
+}
+
+/* ✅ FIXED: Full screen on mobile, centered on desktop */
+.auth-modal-content {
+  position: relative;
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 60px 30px 40px 30px;
+  width: 100%;
+  max-width: 480px; /* ← Max width for desktop */
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  margin: 20px; /* ← Breathing room on all sides */
+}
+
+/* ✅ FIXED: Close button always visible */
+.auth-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  font-size: 24px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10; /* ← Always on top of content */
+}
+
+.auth-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 10px;
+  margin: 30px 0 10px 0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-tab {
+  display: flex;
+  flex-direction: row;
+  margin: 0 auto;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 10px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+}
+
+.auth-tab p{
+   color: var(--accent-primary);
+   margin: 0;
+   padding: 0;
+}
+
+.auth-tab.active {
+  color: var(--accent-primary);
+}
+
+.auth-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-primary);
+}
+
+.auth-form{
+  margin: 40px 0 0 0;
+}
+
+.auth-form h2 {
+  margin: 0 0 20px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.auth-form p{
+  font-size: 14px;
+}
+
+.input-group {
+  position: relative;
+  width: 100%;
+  margin: 20px 0 15px 0;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;          
+  top: 50%;              
+  transform: translateY(-50%); 
+  width: 15px;           
+  pointer-events: none;  
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  background: var(--bg-secondary);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--accent-secondary);
+  border: none;
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  margin: 20px 0 15px 0;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.auth-link a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  display: flex;
+  justify-content: right;
+}
+
+.auth-error {
+  padding: 10px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  color: #ff6b6b;
+  margin-top: 15px;
+}
+
+.auth-success {
+  padding: 10px;
+  background: rgba(29, 185, 84, 0.1);
+  border: 1px solid rgba(29, 185, 84, 0.3);
+  border-radius: 8px;
+  color: #1DB954;
+  margin-top: 15px;
+}
+
+@media (max-width: 768px) {
+  .auth-modal-content {
+    margin: 10px;
+    padding: 50px 20px 30px 20px;
+    max-height: 95vh;
+  }
+  
+  .auth-close {
+    top: 15px;
+    right: 15px;
+  }
+}
+
+</style>

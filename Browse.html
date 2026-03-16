@@ -4,50 +4,101 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Browse</title>
+        <script type="module" src="firebase-config/firebase-config.js"></script>
+        <script type="module" src="auth.js"></script> 
         <link rel="stylesheet" href="style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Young+Serif&display=swap" rel="stylesheet">
     </head>
 <body>
-    <div class="utility-container">
-        <button id="dark-mode-toggle" aria-label="Toggle Dark/Light Mode">
-            ☀️
-        </button>
-    </div>
 
     <header>
         <nav class="nbar">
-            <a href="index.html" class="logo-t">
-                <h1>Moodify</h1>
-            </a>
-            <img src="Images/icon-menu.svg" alt="menu-open" id="menu-open-btn">
+            <a href="index.html" class="logo-t"><h1>Fluence</h1></a>
+
+
+            <button class="theme-toggle" id="dark-mode-toggle" aria-label="Toggle Dark/Light Mode">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+            </button>
+
+
+            <img src="Images/icon-hamburger.svg" alt="menu-open" id="menu-open-btn">
         </nav>
+
 
         <div id="mobile-nav-container">
             <div id="mobile-nav">
-                <img src="Images/icon-menu-close.svg" alt="close menu" id="menu-close-btn">
-                <a href="index.html" class="playlist-btn">Home</a>
-                <a href="Addyourplaylist.html" class="playlist-btn">Add Your Playlist🎶</a>
-                <div class="social-icons">
-                    <img src="Images/icon-instagram.svg" alt="insta">
-                    <img src="Images/icon-facebook.svg" alt="facebook">
-                    <img src="Images/icon-twitter.svg" alt="X">
+                <img src="Images/icon-close.svg" alt="close menu" id="menu-close-btn">
+                <a href="index.html" class="playlist-btn sight move"><img src="Images/Home.png" alt="home"><p>Home</p></a>
+                <a href="Addyourplaylist.html" class="playlist-btn sight"><img src="Images/Library.png" alt="add-playlist"><p>Add Your Playlist</p></a>
+
+                <a href="browse-community.html" class="playlist-btn hidden" data-auth-required style="display:none;">
+                  <img src="Images/Explore.png" alt="explore"><p>Explore</p>
+                </a>
+
+                <a href="dashboard.html" class="playlist-btn hidden" data-auth-required style="display:none;"><img src="Images/Dashboard.png" alt="dashboard"><p>Dashboard</p></a>
+
+                <!-- ✅ AUTH BUTTON (shows when NOT logged in) -->
+                <button id="signin-btn" data-no-auth onclick="openAuthModal('signin')" style="background: var(--bg-secondary); border: none; padding: 12px 24px; border-radius: 20px; color: white; cursor: pointer; font-weight: 600; margin-top: 20px; width: 100%;">
+                   Sign In
+                </button>
+
+                <!-- ✅ USER PROFILE SECTION (shows when logged in) -->
+                <div id="user-profile-section" data-auth-required style="display: none; margin-top: 20px;">
+                  
+                  <!-- User Avatar & Info (clickable - goes to profile) -->
+                  <div onclick="goToMyProfile()" style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px; background: rgba(128, 128, 128, 0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 12px; cursor: pointer; border: none; margin-bottom: 12px; transition: transform 0.2s;">
+                    
+                    <!-- Avatar -->
+                    <img data-user-photo 
+                        style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: none;" 
+                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23333' width='100' height='100'/%3E%3Ctext fill='%23ccc' font-size='40' x='50%25' y='50%25' text-anchor='middle' dy='.35em'%3E👤%3C/text%3E%3C/svg%3E"
+                        alt="Profile">
+                    
+                    <!-- User Info -->
+                    <div style="flex: 1; min-width: 0;">
+                      <div data-user-name style="font-weight: 700; color: var(--text-primary); font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                      <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">View Profile →</div>
+                    </div>
                   </div>
+                  
+                  <!-- Logout Button (direct - no dropdown) -->
+                  <button onclick="signOutUser()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #ff6b6b, #ee5a6f); border: none; border-radius: 12px; color: white; cursor: pointer; font-weight: 700; text-align: center; font-size: 15px; transition: transform 0.2s;">
+                    🚪 Sign Out
+                  </button>
+                  
+                </div>
+
+              <div class="social-icons">
+                <a href="https://www.instagram.com/posixoxo_/"><img src="Images/icon-instagram.svg" alt="instagram"></a>
+                <a href="javascipt.void"><img src="Images/icon-facebook.svg" alt="facebook"></a>
+                <a href="https://x.com/PosiXoxo"><img src="Images/icon-twitter.svg" alt="X"></a>
+              </div>
             </div>
         </div>
+        
     </header>
 
     <main>
         <section>
-            <div class="top-image">
-            <img src="Images/apple-music (1).svg" alt="AP-1" class="APP-1">
-            <img src="Images/Airpods.png" alt="AP-2" class="APP-1">
-            </div>
 
             <section id="playlist-app">
                 <div class="playlist-controls">
-                    <h2>Pick a Mood / Build Your Vibe</h2>
+                    <h2>Build Your Vibe</h2>
 
                     <!-- ADDED: Random vibe -->
                     <div class="extra-controls">
@@ -132,20 +183,214 @@
                     <!-- JS will inject playlist cards here -->
                 </div>
             </section>
-            <!-- END ADDED playlist app UI -->
 
-            <div class="top-image">
-                <img src="Images/Apple Music.png" alt="AP-4" class="APP-1">
-                <img src="Images/Accessories.png" alt="Accessories" class="APP-1">
-            </div>
         </section>
     </main>
 
     <hr>
     <footer>
-        <span>&copy2025 Moodify. All Right Reserved.</span>
+        <span>&copy2025 Fluence. All Right Reserved.</span>
     </footer>
 
+
+ 
+<!-- Load Auth Modal Dynamically -->
+<div id="auth-modal-container"></div>
+
+<script type="module">
+// DEFINE GLOBAL AUTH FUNCTIONS FIRST (before modal loads)
+import { signUp, signIn, signInWithGoogle, resetPassword } from './auth.js';
+
+// Google Sign In
+window.handleGoogleSignIn = async () => {
+  console.log('🔍 Google sign in clicked');
+  const result = await signInWithGoogle();
+  if (result.success) {
+    closeAuthModal();
+    showToast('Signed in with Google!');
+  } else {
+    console.error('Google sign in failed:', result.error);
+    alert('Google sign in failed: ' + result.error);
+  }
+};
+
+// Switch Auth Tabs
+window.switchAuthTab = (tab) => {
+  console.log('Switching to tab:', tab);
+  document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
+  const form = document.getElementById(`${tab}-form`);
+  if (form) form.style.display = 'block';
+  
+  document.querySelectorAll('.auth-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  
+  // Clear errors
+  document.querySelectorAll('.auth-error, .auth-success').forEach(e => {
+    if (e) e.style.display = 'none';
+  });
+};
+
+// Show Toast
+function showToast(message) {
+  const toast = document.getElementById('success-toast');
+  if (toast) {
+    const msgEl = document.getElementById('toast-message');
+    if (msgEl) msgEl.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  }
+}
+window.showToast = showToast;
+
+// ✅ NOW LOAD THE MODAL
+fetch('auth-modal.html')
+  .then(response => response.text())
+  .then(html => {
+    document.getElementById('auth-modal-container').innerHTML = html;
+    console.log('✅ Auth modal loaded');
+    
+    // ✅ ATTACH FORM HANDLERS AFTER MODAL LOADS
+    setTimeout(initAuthHandlers, 100);
+  })
+  .catch(error => {
+    console.error('❌ Failed to load auth modal:', error);
+  });
+
+// Form Handlers
+function initAuthHandlers() {
+  console.log('🔧 Initializing auth handlers...');
+  
+  // Sign In Handler
+  const signinForm = document.getElementById('signin-form-element');
+  if (signinForm) {
+    signinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signin-email').value;
+      const password = document.getElementById('signin-password').value;
+      const errorEl = document.getElementById('signin-error');
+      const btn = e.target.querySelector('button[type="submit"]');
+      
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      errorEl.style.display = 'none';
+      
+      const result = await signIn(email, password);
+      
+      if (result.success) {
+        closeAuthModal();
+        showToast('Welcome back!');
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    });
+    console.log('✅ Sign in handler attached');
+  }
+
+  // Sign Up Handler
+  const signupForm = document.getElementById('signup-form-element');
+  if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const errorEl = document.getElementById('signup-error');
+      const btn = e.target.querySelector('button[type="submit"]');
+      
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+      errorEl.style.display = 'none';
+      
+      const result = await signUp(email, password, name);
+      
+      if (result.success) {
+        closeAuthModal();
+        showToast('Account created! Welcome!');
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    });
+    console.log('✅ Sign up handler attached');
+  }
+
+  // Password Reset Handler
+  const resetForm = document.getElementById('reset-form-element');
+  if (resetForm) {
+    resetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('reset-email').value;
+      const errorEl = document.getElementById('reset-error');
+      const successEl = document.getElementById('reset-success');
+      
+      const result = await resetPassword(email);
+      
+      if (result.success) {
+        successEl.textContent = 'Reset email sent! Check your inbox.';
+        successEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+        successEl.style.display = 'none';
+      }
+    });
+    console.log('✅ Password reset handler attached');
+  }
+}
+
+// Toggle user dropdown (works inside mobile nav)
+window.toggleUserMenu = () => {
+  const dropdown = document.getElementById('user-dropdown');
+  if (dropdown) {
+    const isVisible = dropdown.style.display === 'block';
+    dropdown.style.display = isVisible ? 'none' : 'block';
+    console.log('User menu toggled:', !isVisible);
+  }
+};
+</script>
+
+<script type="module">
+import { auth } from './firebase-config/firebase-config.js';
+
+// ✅ Define goToMyProfile function globally
+window.goToMyProfile = function() {
+  console.log('🔍 goToMyProfile called');
+  
+  // Get current user from modular Firebase
+  const user = auth.currentUser;
+  
+  if (user) {
+    console.log('✅ User found:', user.uid);
+    window.location.href = `profile.html?user=${user.uid}`;
+  } else {
+    console.error('❌ No user logged in');
+    
+    // Try to open auth modal if available
+    if (typeof window.openAuthModal === 'function') {
+      window.openAuthModal('signin');
+    } else {
+      alert('Please sign in first');
+    }
+  }
+};
+
+console.log('✅ goToMyProfile function defined and ready');
+</script>
+
+
+   
 <script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Moodify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="firebase-config/firebase-config.js"></script>
+  <script type="module" src="auth.js"></script>
+
+<style>
+    :root {
+      --dash-bg: #081917;             /* Ink Black Base */
+      --dash-surface: #0d2b27;        /* Deep Pine Surface */
+      --dash-card: #0b2421;           /* Elevated Card */
+      --dash-border: rgba(63, 178, 161, 0.2); /* Pine Border */
+      --dash-accent: #fcb790;         /* Peach Glow */
+      --dash-accent2: #3fb2a1;        /* Teal Accent */
+      --dash-danger: #e05c5c;
+      --dash-text: #f5f5f5;           /* Soft White */
+      --dash-muted: #628a84;          /* Muted Pine */
+      --dash-input-bg: #051110;       /* Recessed Ink */
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--dash-bg);
+      color: var(--dash-text);
+      min-height: 100vh;
+    }
+
+    /* Loading state */
+    .loading-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      gap: 20px;
+    }
+
+    .loading-dots {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .loading-dots .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--dash-accent);
+      animation: wave 1.4s ease-in-out infinite;
+    }
+
+    .loading-dots .dot:nth-child(1) { animation-delay: 0s; }
+    .loading-dots .dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes wave {
+      0%, 60%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.6;
+      }
+      30% {
+        transform: translateY(-16px) scale(1.1);
+        opacity: 1;
+      }
+    }
+
+    .loading-text {
+      color: var(--dash-muted);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* ── NAV ── */
+    .dash-nav {
+      display: flex;
+      position: fixed;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-top: 1px solid var(--dash-border);
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(8, 25, 23, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px); 
+      z-index: 1000;
+    }
+
+    .dash-nav-links {
+      display: flex;
+      justify-content: space-around; 
+      align-items: center;
+      gap: 22px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .dash-nav-link img {
+      display: block;
+      width: 20px;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .dash-nav-link p{
+      font-size: 11px;
+      font-family: "Caprasimo", serif;
+      color: var(--text-primary);
+      letter-spacing: 2px;
+    }
+
+    .dash-nav-link {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      color: var(--dash-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .dash-nav-link:hover { color: var(--dash-text); }
+    .dash-nav-link.active { color: var(--dash-accent); }
+
+    .dash-nav-btn {
+      padding: 8px 20px;
+      background: linear-gradient(135deg, var(--dash-accent), var(--dash-accent2));
+      border: none;
+      border-radius: 20px;
+      color: #081917;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── LAYOUT ── */
+    .dash-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .dash-section {
+      margin-bottom: 48px;
+    }
+
+    .dash-section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dash-muted);
+      margin-bottom: 20px;
+    }
+
+    /* ── PROFILE BANNER ── */
+    .profile-banner-wrap {
+      position: relative;
+      width: 100vw;
+      border-radius: 0;
+      overflow: hidden;
+      margin-top: 0;
+      margin-left: 50%;
+      transform: translate(-50%);
+    }
+
+    .profile-banner {
+      width: 100%;
+      height: 400px;
+      background: var(--dash-surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: opacity 0.2s;
+    }
+
+    .profile-overlay-title {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      margin-bottom: 0; 
+      color: white !important; 
+      z-index: 5;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .profile-banner img.banner-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    .banner-text-display {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.9);
+      text-align: center;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .banner-edit-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 25, 23, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 2;
+    }
+
+    .profile-banner:hover .banner-edit-overlay { opacity: 1; }
+
+    .banner-edit-overlay span {
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .banner-edit-overlay svg { color: white; }
+
+    /* Banner edit options */
+    .banner-options {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      background: var(--dash-card);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      width: 280px;
+      text-align: center;
+      border: 1px solid var(--dash-border);
+    }
+
+    .banner-options.visible { display: block; }
+
+    .banner-options h4 {
+      font-family: 'Syne', sans-serif;
+      margin-bottom: 16px;
+      font-size: 15px;
+      color: var(--dash-text);
+    }
+
+    .banner-options input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--dash-input-bg);
+      border: 1px solid var(--dash-border);
+      border-radius: var(--radius-sm);
+      color: var(--dash-text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    .banner-opts-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* ── PROFILE INFO ROW ── */
+    .profile-info-card {
+      max-width: 900px; 
+      margin: 0 auto;
+      background: var(--dash-card);
+      padding: 20px 24px 24px;
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+      border: 1px solid var(--dash-border);
+      border-top: none;
+    }
+
+    .profile-avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+      margin-top: -70px;
+      z-index: 10;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 6px solid var(--dash-card);
+      background: var(--dash-surface);
+      display: block;
+    }
+
+    .avatar-edit-btn {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 28px;
+      height: 28px;
+      background: var(--dash-accent);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-edit-btn svg { color: #0f0e0d; }
+
+    .profile-details { flex: 1; min-width: 0; }
+
+    /* Editable fields */
+    .editable-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .editable-field .field-display {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--dash-text);
+    }
+
+    .editable-field .field-sub {
+      font-size: 14px;
+      color: var(--dash-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+    }
+
+    .edit-pencil {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--dash-muted);
+      padding: 4px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .edit-pencil:hover { color: var(--dash-accent); background: rgba(252,183,144,0.1); }
+
+    .inline-edit-input {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      background: var(--dash-input-bg);
+      border: 2px solid var(--dash-accent);
+      border-radius: 8px;
+      color: var(--dash-text);
+      padding: 4px 10px;
+      width: 100%;
+      outline: none;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 24px;
+      margin-top: 12px;
+    }
+
+    .stat-item { text-align: center; }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--dash-accent);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--dash-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── ADD PLAYLIST SECTION ── */
+    .add-card {
+      background: var(--dash-card);
+      border: 1px solid var(--dash-border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+
+    .link-input-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .link-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .platform-badge {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    .link-input {
+      width: 100%;
+      padding: 14px 14px 14px 44px;
+      background: var(--dash-input-bg);
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--dash-text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .link-input:focus { border-color: var(--dash-accent); }
+    .link-input::placeholder { color: var(--dash-muted); }
+
+    .fetch-btn {
+      padding: 14px 22px;
+      background: var(--dash-accent2);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #081917;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 14px;
+      transition: opacity 0.2s;
+    }
+
+    .fetch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Fetched playlist preview */
+    .playlist-preview {
+      display: none;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--dash-border);
+    }
+
+    .playlist-preview.visible { display: block; }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .cover-upload-area {
+      width: 140px;
+      height: 140px;
+      border-radius: var(--radius-md);
+      background: var(--dash-input-bg);
+      border: 2px dashed var(--dash-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .cover-upload-area:hover { border-color: var(--dash-accent); }
+
+    .cover-upload-area img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cover-placeholder { text-align: center; color: var(--dash-muted); font-size: 12px; }
+    .cover-placeholder svg { display: block; margin: 0 auto 6px; }
+
+    .preview-fields { display: flex; flex-direction: column; gap: 12px; }
+
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+
+    .field-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dash-muted);
+    }
+
+    .field-input, .field-select, .field-textarea {
+      padding: 10px 14px;
+      background: var(--dash-input-bg);
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--dash-text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .field-input:focus, .field-select:focus, .field-textarea:focus {
+      border-color: var(--dash-accent);
+    }
+
+    .field-textarea { resize: vertical; min-height: 70px; }
+    .field-select option { background: var(--dash-card); color: var(--dash-text); }
+
+    .fields-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .save-playlist-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--dash-accent), var(--dash-accent2));
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #081917;
+      font-weight: 700;
+      font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s;
+    }
+
+    .save-playlist-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── MY PLAYLISTS HORIZONTAL SCROLL ── */
+    .playlists-scroll-wrap { position: relative; }
+
+    .playlists-scroll {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .playlists-scroll::-webkit-scrollbar { height: 4px; }
+    .playlists-scroll::-webkit-scrollbar-track { background: var(--dash-surface); border-radius: 2px; }
+    .playlists-scroll::-webkit-scrollbar-thumb { background: var(--dash-muted); border-radius: 2px; }
+
+    .playlist-card {
+      flex-shrink: 0;
+      width: 180px;
+      scroll-snap-align: start;
+      background: var(--dash-card);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--dash-border);
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+      position: relative;
+    }
+
+    .playlist-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--dash-accent);
+    }
+
+    .playlist-card-cover {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      background: var(--dash-surface);
+    }
+
+    .playlist-card-cover-placeholder {
+      width: 100%;
+      height: 180px;
+      background: linear-gradient(135deg, var(--dash-surface), var(--dash-bg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    .playlist-card-body { padding: 12px; }
+
+    .playlist-card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--dash-text);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .playlist-card-genre {
+      font-size: 11px;
+      color: var(--dash-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .playlist-card-platform {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 16px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 6px;
+      padding: 3px 5px;
+    }
+
+    .playlist-card-actions {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .playlist-card:hover .playlist-card-actions { opacity: 1; }
+
+    .card-action-btn {
+      width: 28px;
+      height: 28px;
+      background: rgba(0,0,0,0.7);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      transition: background 0.2s;
+    }
+
+    .card-action-btn.delete:hover { background: var(--dash-danger); }
+
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      color: var(--dash-muted);
+      text-align: center;
+      background: var(--dash-card);
+      border-radius: var(--radius-lg);
+      border: 1px dashed var(--dash-border);
+    }
+
+    .empty-state svg { margin-bottom: 16px; opacity: 0.4; }
+    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 16px; margin-bottom: 8px; color: var(--dash-text); }
+    .empty-state p { font-size: 13px; }
+
+    /* Loading spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: var(--dash-accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .dash-toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--dash-card);
+      color: var(--dash-text);
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid var(--dash-border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .dash-toast.show { opacity: 1; }
+
+    /* Buttons */
+    .btn-secondary {
+      padding: 10px 18px;
+      background: var(--dash-input-bg);
+      border: 1px solid var(--dash-border);
+      border-radius: var(--radius-sm);
+      color: var(--dash-text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: var(--dash-accent); color: var(--dash-accent); }
+
+    .btn-danger {
+      padding: 10px 18px;
+      background: transparent;
+      border: 1px solid var(--dash-danger);
+      border-radius: var(--radius-sm);
+      color: var(--dash-danger);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .platform-detected {
+      font-size: 12px;
+      color: var(--dash-accent2);
+      margin-top: 6px;
+      display: none;
+    }
+    
+    .p-platform-display { 
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .p-platform-display img {
+        display: block;
+        object-fit: contain;
+        width: 10px;
+        height: 10px;
+    }
+
+  .p-platform-icon {
+      width: 20px !important;
+      height: 20px !important;
+      object-fit: contain;
+      position: absolute;
+      right: 5px;
+      top: 95%;
+      transform: translateY(-50%);
+      pointer-events: none; 
+  }
+
+    .p2-platform-icon {
+      width: 20px !important;
+      height: 20px !important;
+      object-fit: contain;
+      position: absolute;
+      right: -20px;
+      top: 95%;
+      transform: translateY(-50%);
+      pointer-events: none; 
+  }
+
+  
+
+    /* Login gate */
+    .login-gate {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .login-gate h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      color: var(--dash-text);
+    }
+
+    .login-gate p { color: var(--dash-muted); }
+
+    @media (max-width: 600px) {
+      .dash-nav { padding: 16px; }
+      .preview-grid { grid-template-columns: 1fr; }
+      .cover-upload-area { width: 100%; height: 200px; }
+      .fields-row { grid-template-columns: 1fr; }
+      .profile-info-card { flex-direction: column; align-items: flex-start; }
+      .profile-stats { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="dash-nav">
+  <div class="dash-nav-links">
+    <a href="index.html" class="dash-nav-link"><img src="Images/Home.png" alt="home"><p>Home</p></a>
+    <a href="browse-community.html" class="dash-nav-link"><img src="Images/Explore.png" alt="explore"><p>Explore</p></a>
+    <a href="dashboard.html" class="dash-nav-link active"><img src="Images/Dashboard.png" alt="dashboard"><p>Dashboard</p></a>
+    <a href="Browse.html" class="dash-nav-link"><img src="Images/search-visual.png" alt="search"><p>Find Vibes</p></a>
+  </div>
+</nav>
+
+
+<!-- LOADING STATE (shows first while checking auth) -->
+<div id="loading-state" class="dash-container">
+  <div class="loading-center">
+    <div class="loading-dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <p class="loading-text">Loading dashboard...</p>
+  </div>
+</div>
+
+<!-- LOGIN GATE (hidden by default, shown only if NOT logged in) -->
+<div id="login-gate" class="dash-container" style="display: none;">
+  <div class="login-gate">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(252,183,144,0.5)" stroke-width="1.5">
+      <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/>
+    </svg>
+    <h2>Sign in to view your dashboard</h2>
+    <p>Track your playlists, profile, and listening stats.</p>
+    <button class="dash-nav-btn" onclick="openAuthModal('signin')" style="padding: 12px 32px; font-size: 15px;">
+      Sign In
+    </button>
+  </div>
+</div>
+
+<!-- DASHBOARD CONTENT (shown when logged in) -->
+<div id="dash-content" class="dash-container" style="display: none;">
+
+  <!-- ── PROFILE SECTION ── -->
+  <div class="dash-section">
+
+    <div class="profile-banner-wrap">
+      <!-- Banner -->
+      <div class="profile-banner" id="profile-banner" onclick="toggleBannerOptions()">
+        <img class="banner-img" id="banner-img" src="" alt="" style="display:none;">
+        <div class="banner-text-display" id="banner-text-display"></div>
+        <div class="banner-edit-overlay">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          <span>Edit Banner</span>
+        </div>
+
+        <!-- Banner options popup -->
+        <div class="banner-options" id="banner-options" onclick="event.stopPropagation()">
+          <h4>Edit Banner</h4>
+          <input type="text" id="banner-text-input" placeholder="Add a banner quote or phrase...">
+          <div class="banner-opts-row">
+            <button class="btn-secondary" onclick="saveBannerText()" style="flex:1">Save Text</button>
+            <label class="btn-secondary" style="flex:1; text-align:center; cursor:pointer;">
+              Upload Image
+              <input type="file" accept="image/*" style="display:none" onchange="uploadBannerFile(this)">
+            </label>
+          </div>
+          <button class="btn-danger" onclick="toggleBannerOptions()" style="width:100%; margin-top:10px;">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Profile info row -->
+      <div class="profile-info-card">
+        <!-- Avatar -->
+        <div class="profile-avatar-wrap">
+          <img class="profile-avatar" id="profile-avatar" src="Images/default-avatar.png" alt="Avatar">
+          <label class="avatar-edit-btn" title="Change photo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            <input type="file" accept="image/*" style="display:none" onchange="uploadAvatarFile(this)">
+          </label>
+        </div>
+
+        <div class="profile-details">
+          <!-- Editable name -->
+          <div class="editable-field" id="name-field">
+            <span class="field-display" id="name-display">—</span>
+            <button class="edit-pencil" onclick="startEditName()" title="Edit name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+          </div>
+          <div id="name-edit" style="display:none; margin-bottom:6px;">
+            <input class="inline-edit-input" id="name-input" type="text" placeholder="Your name">
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button class="dash-nav-btn" onclick="saveEditName()" style="padding:8px 16px; font-size:13px;">Save</button>
+              <button class="btn-secondary" onclick="cancelEditName()" style="padding:8px 16px; font-size:13px;">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Email (read-only) -->
+          <div class="editable-field" style="margin-top: 4px;">
+            <span class="field-sub" id="email-display">—</span>
+          </div>
+
+          <!-- Stats -->
+          <div class="profile-stats">
+            <div class="stat-item">
+              <div class="stat-num" id="stat-playlists">0</div>
+              <div class="stat-label">Playlists</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num" id="stat-plays">0</div>
+              <div class="stat-label">Total Plays</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num" id="stat-views">0</div>
+              <div class="stat-label">Profile Views</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADD PLAYLIST SECTION ── -->
+  <div class="dash-section">
+    <p class="dash-section-title">Add a Playlist</p>
+    <div class="add-card">
+      <div class="link-input-row">
+        <div class="link-input-wrap">
+          <span class="platform-badge" id="platform-icon">🔗</span>
+          <input class="link-input" id="playlist-url-input"
+            type="url"
+            placeholder="Paste a Spotify, YouTube, SoundCloud or Apple Music link..."
+            oninput="detectPlatformFromURL(this.value)">
+        </div>
+        <button class="fetch-btn" id="fetch-btn" onclick="fetchPlaylistData()">
+          Fetch Info
+        </button>
+      </div>
+      <div class="platform-detected" id="platform-detected"></div>
+
+      <!-- Preview / Edit form (appears after fetch) -->
+      <div class="playlist-preview" id="playlist-preview">
+        <div class="preview-grid">
+          <!-- Cover art -->
+          <div>
+            <label class="cover-upload-area" id="cover-area" title="Upload cover image">
+              <img id="cover-preview-img" src="" alt="" style="display:none;">
+              <div class="cover-placeholder" id="cover-placeholder">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="3"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+                Click to add cover
+              </div>
+              <input type="file" accept="image/*" style="display:none" onchange="previewCoverFile(this)">
+            </label>
+          </div>
+
+          <!-- Fields -->
+          <div class="preview-fields">
+            <div class="field-group">
+              <label class="field-label">Title *</label>
+              <input class="field-input" id="pl-title" type="text" placeholder="Playlist name">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Description</label>
+              <textarea class="field-textarea" id="pl-description" placeholder="Optional description..."></textarea>
+            </div>
+            <div class="fields-row">
+              <div class="field-group">
+                <label class="field-label">Genre</label>
+                <select class="field-select" id="pl-genre">
+                  <option value="">Select genre...</option>
+                  <option>Afrobeats</option>
+                  <option>Amapiano</option>
+                  <option>Hip-Hop</option>
+                  <option>R&B</option>
+                  <option>Pop</option>
+                  <option>Gospel</option>
+                  <option>Jazz</option>
+                  <option>Electronic</option>
+                  <option>Dancehall</option>
+                  <option>Reggae</option>
+                  <option>Drill</option>
+                  <option>Soul</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Mood</label>
+                <select class="field-select" id="pl-mood">
+                  <option value="">Select mood...</option>
+                  <option>Happy</option>
+                  <option>Chill</option>
+                  <option>Workout</option>
+                  <option>Heartbreak</option>
+                  <option>Hype</option>
+                  <option>Late Night</option>
+                  <option>Focus</option>
+                  <option>Party</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="save-playlist-btn" id="save-playlist-btn" onclick="savePlaylist()">
+          Save to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MY PLAYLISTS ── -->
+  <div class="dash-section">
+    <p class="dash-section-title">My Playlists</p>
+    <div id="my-playlists-container">
+      <div class="empty-state" id="playlists-empty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+        </svg>
+        <h3>No playlists yet</h3>
+        <p>Paste a link above to add your first one</p>
+      </div>
+      <div class="playlists-scroll" id="playlists-scroll" style="display:none;"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="dash-toast" id="dash-toast"></div>
+
+<!-- Hidden file inputs -->
+<input type="file" id="cover-file-actual" accept="image/*" style="display:none">
+
+<div id="auth-modal-container"></div>
+<script type="module">
+import { auth } from './firebase-config/firebase-config.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import {
+  getUserProfile, createUserProfile, updateUserProfile,
+  addPlaylist, getUserPlaylists, deletePlaylist as dbDeletePlaylist
+} from './firebase-config/database.js';
+
+// ── STATE ──
+let currentUser = null;
+let userProfile = null;
+let fetchedPlaylistData = null;
+let coverFileSelected = null;
+const PLATFORM_ICONS = {
+  spotify: `<img src="https://cdn.simpleicons.org/spotify/1DB954" class="p-platform-icon" alt="Spotify">`,
+  youtube: `<img src="https://cdn.simpleicons.org/youtube/FF0000" class="p-platform-icon" alt="YouTube">`,
+  soundcloud: `<img src="https://cdn.simpleicons.org/soundcloud/FF5500" class="p-platform-icon" alt="SoundCloud">`,
+  apple: `<img src="https://cdn.simpleicons.org/applemusic/FA243C" class="p-platform-icon" alt="Apple Music">`,
+  other: `<img src="https://cdn.simpleicons.org/linktree/19E467" class="p-platform-icon" alt="Link">` 
+};
+
+const PLATFORM_LABELS = {
+  spotify: 'Spotify detected', 
+  youtube: 'YouTube detected',
+  soundcloud: 'SoundCloud detected', 
+  apple: 'Apple Music detected'
+};
+
+// ✅ IMAGE TO BASE64 CONVERTER (replaces Firebase Storage)
+async function imageToBase64(file) {
+  return new Promise((resolve, reject) => {
+    if (file.size > 1024 * 1024) {
+      reject(new Error('Image too large (max 1MB)'));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width = img.width;
+        let height = img.height;
+        const maxSize = 800;
+        
+        if (width > height) {
+          if (width > maxSize) {
+            height *= maxSize / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width *= maxSize / height;
+            height = maxSize;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        const base64 = canvas.toDataURL('image/jpeg', 0.85);
+        resolve(base64);
+      };
+      img.onerror = () => reject(new Error('Invalid image'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Read failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── INIT ──
+onAuthStateChanged(auth, async (user) => {
+  // Hide loading state
+  const loadingEl = document.getElementById('loading-state');
+  if (loadingEl) loadingEl.style.display = 'none';
+
+  if (user) {
+    currentUser = user;
+    document.getElementById('login-gate').style.display = 'none';
+    document.getElementById('dash-content').style.display = 'block';
+    await initDashboard();
+  } else {
+    document.getElementById('login-gate').style.display = 'block';
+    document.getElementById('dash-content').style.display = 'none';
+  }
+});
+
+async function initDashboard() {
+  console.log('🚀 Initializing dashboard for:', currentUser.email);
+  
+  await createUserProfile(currentUser.uid, {
+    email: currentUser.email,
+    displayName: currentUser.displayName || currentUser.email.split('@')[0],
+    photoURL: currentUser.photoURL || ''
+  });
+
+  const result = await getUserProfile(currentUser.uid);
+  if (result.success) {
+    userProfile = result.data;
+    renderProfile();
+  }
+
+  await loadMyPlaylists();
+}
+
+function renderProfile() {
+  const name = userProfile.displayName || currentUser.email.split('@')[0];
+  const email = currentUser.email;
+
+  document.getElementById('name-display').textContent = name;
+  document.getElementById('email-display').textContent = email;
+
+  // ✅ Avatar with inline SVG fallback (no external file needed)
+  const avatarEl = document.getElementById('profile-avatar');
+  if (userProfile.photoURL || currentUser.photoURL) {
+    const photoURL = userProfile.photoURL || currentUser.photoURL;
+    avatarEl.src = photoURL;
+    avatarEl.onerror = () => {
+      avatarEl.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%231a1815" width="100" height="100"/%3E%3Ctext fill="%23f0ece6" font-size="40" x="50%25" y="50%25" text-anchor="middle" dy=".35em"%3E👤%3C/text%3E%3C/svg%3E';
+    };
+  } else {
+    avatarEl.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%231a1815" width="100" height="100"/%3E%3Ctext fill="%23f0ece6" font-size="40" x="50%25" y="50%25" text-anchor="middle" dy=".35em"%3E👤%3C/text%3E%3C/svg%3E';
+  }
+
+  // Banner
+  if (userProfile.bannerURL) {
+    document.getElementById('banner-img').src = userProfile.bannerURL;
+    document.getElementById('banner-img').style.display = 'block';
+    document.getElementById('banner-text-display').textContent = '';
+  } else if (userProfile.bannerText) {
+    document.getElementById('banner-text-display').textContent = userProfile.bannerText;
+  }
+
+  // Stats
+  const stats = userProfile.stats || {};
+  document.getElementById('stat-playlists').textContent = stats.totalPlaylists || 0;
+  document.getElementById('stat-plays').textContent = stats.totalPlays || 0;
+  document.getElementById('stat-views').textContent = stats.profileViews || 0;
+}
+
+// ── BANNER ──
+window.toggleBannerOptions = () => {
+  const opts = document.getElementById('banner-options');
+  opts.classList.toggle('visible');
+  if (opts.classList.contains('visible')) {
+    document.getElementById('banner-text-input').value = userProfile?.bannerText || '';
+  }
+};
+
+window.saveBannerText = async () => {
+  const text = document.getElementById('banner-text-input').value.trim();
+  if (!text) return;
+  const res = await updateUserProfile(currentUser.uid, { bannerText: text, bannerURL: '' });
+  if (res.success) {
+    document.getElementById('banner-text-display').textContent = text;
+    document.getElementById('banner-img').style.display = 'none';
+    userProfile.bannerText = text;
+    userProfile.bannerURL = '';
+    toggleBannerOptions();
+    showToast('Banner updated!');
+  }
+};
+
+// ✅ Upload banner as base64 (no Firebase Storage)
+window.uploadBannerFile = async (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  showToast('Processing banner...');
+  try {
+    const base64 = await imageToBase64(file);
+    const res = await updateUserProfile(currentUser.uid, { bannerURL: base64, bannerText: '' });
+    if (res.success) {
+      document.getElementById('banner-img').src = base64;
+      document.getElementById('banner-img').style.display = 'block';
+      document.getElementById('banner-text-display').textContent = '';
+      userProfile.bannerURL = base64;
+      toggleBannerOptions();
+      showToast('Banner updated!');
+    }
+  } catch (e) {
+    showToast('Error: ' + e.message);
+  }
+};
+
+// ✅ Upload avatar as base64 (no Firebase Storage)
+window.uploadAvatarFile = async (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  showToast('Processing photo...');
+  try {
+    const base64 = await imageToBase64(file);
+    const res = await updateUserProfile(currentUser.uid, { photoURL: base64 });
+    if (res.success) {
+      document.getElementById('profile-avatar').src = base64;
+      userProfile.photoURL = base64;
+      showToast('Photo updated!');
+    }
+  } catch (e) {
+    showToast('Error: ' + e.message);
+  }
+};
+
+// ── NAME EDIT ──
+window.startEditName = () => {
+  document.getElementById('name-field').style.display = 'none';
+  document.getElementById('name-edit').style.display = 'block';
+  document.getElementById('name-input').value = userProfile?.displayName || '';
+  document.getElementById('name-input').focus();
+};
+
+window.cancelEditName = () => {
+  document.getElementById('name-field').style.display = 'flex';
+  document.getElementById('name-edit').style.display = 'none';
+};
+
+window.saveEditName = async () => {
+  const name = document.getElementById('name-input').value.trim();
+  if (!name) return;
+  const res = await updateUserProfile(currentUser.uid, { displayName: name });
+  if (res.success) {
+    document.getElementById('name-display').textContent = name;
+    userProfile.displayName = name;
+    cancelEditName();
+    showToast('Name updated!');
+  }
+};
+
+// ── PLATFORM DETECT ──
+window.detectPlatformFromURL = (url) => {
+  const icons = {
+    spotify: `<img src="https://cdn.simpleicons.org/spotify/1DB954" class="p2-platform-icon" alt="Spotify">`,
+    youtube: `<img src="https://cdn.simpleicons.org/youtube/FF0000" class="p2-platform-icon" alt="YouTube">`,
+    soundcloud: `<img src="https://cdn.simpleicons.org/soundcloud/FF5500" class="p2-platform-icon" alt="SoundCloud">`,
+    apple: `<img src="https://cdn.simpleicons.org/applemusic/FA243C" class="p2-platform-icon" alt="Apple Music">`,
+    other: `<img src="https://cdn.simpleicons.org/linktree/19E467" class="p2-platform-icon" alt="Link">` 
+  };
+  const iconEl = document.getElementById('platform-icon');
+  const detectedEl = document.getElementById('platform-detected');
+
+  let platform = 'other';
+  if (url.includes('spotify.com')) platform = 'spotify';
+  else if (url.includes('youtube.com') || url.includes('youtu.be')) platform = 'youtube';
+  else if (url.includes('soundcloud.com')) platform = 'soundcloud';
+  else if (url.includes('music.apple.com')) platform = 'apple';
+
+  iconEl.innerHTML = icons[platform] || '🔗';
+
+  if (platform !== 'other' && url.length > 10) {
+    detectedEl.textContent = PLATFORM_LABELS[platform];
+    detectedEl.style.display = 'block';
+  } else {
+    detectedEl.style.display = 'none';
+  }
+};
+
+// ── FETCH PLAYLIST DATA ──
+window.fetchPlaylistData = async () => {
+  const url = document.getElementById('playlist-url-input').value.trim();
+  if (!url) { showToast('Please paste a playlist link first'); return; }
+
+  const btn = document.getElementById('fetch-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    let platform = 'other';
+    if (url.includes('spotify.com')) platform = 'spotify';
+    else if (url.includes('youtube.com') || url.includes('youtu.be')) platform = 'youtube';
+    else if (url.includes('soundcloud.com')) platform = 'soundcloud';
+    else if (url.includes('music.apple.com')) platform = 'apple';
+
+    fetchedPlaylistData = { 
+      platform, 
+      sourceURL: url, 
+      title: '', 
+      thumbnail: '', 
+      embedHTML: '' 
+    };
+
+    document.getElementById('pl-title').value = '';
+    document.getElementById('pl-description').value = '';
+    document.getElementById('playlist-preview').classList.add('visible');
+    showToast('Platform detected! Fill in title and details.');
+
+  } catch (e) {
+    console.error('❌ Fetch error:', e);
+    showToast('Error: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Fetch Info';
+  }
+};
+
+// ✅ Cover file preview with base64
+window.previewCoverFile = async (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  
+  try {
+    showToast('Processing image...');
+    const base64 = await imageToBase64(file);
+    coverFileSelected = base64;
+    document.getElementById('cover-preview-img').src = base64;
+    document.getElementById('cover-preview-img').style.display = 'block';
+    document.getElementById('cover-placeholder').style.display = 'none';
+    showToast('Image ready!');
+  } catch (e) {
+    showToast('Error: ' + e.message);
+  }
+};
+
+// ── SAVE PLAYLIST ──
+window.savePlaylist = async () => {
+  const title = document.getElementById('pl-title').value.trim();
+  if (!title) { showToast('Please add a title'); return; }
+
+  const btn = document.getElementById('save-playlist-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  try {
+    const playlistData = {
+      title,
+      description: document.getElementById('pl-description').value.trim(),
+      genre: document.getElementById('pl-genre').value,
+      mood: document.getElementById('pl-mood').value,
+      coverURL: coverFileSelected || fetchedPlaylistData?.thumbnail || '',
+      sourceURL: fetchedPlaylistData?.sourceURL || document.getElementById('playlist-url-input').value.trim(),
+      platform: fetchedPlaylistData?.platform || 'other',
+      embedHTML: fetchedPlaylistData?.embedHTML || ''
+    };
+
+    console.log('💾 Saving playlist:', playlistData);
+    const res = await addPlaylist(currentUser.uid, playlistData);
+
+    if (res.success) {
+      showToast('Playlist saved!');
+      
+      // Reset form
+      document.getElementById('playlist-url-input').value = '';
+      document.getElementById('pl-title').value = '';
+      document.getElementById('pl-description').value = '';
+      document.getElementById('pl-genre').value = '';
+      document.getElementById('pl-mood').value = '';
+      document.getElementById('cover-preview-img').style.display = 'none';
+      document.getElementById('cover-placeholder').style.display = 'flex';
+      document.getElementById('playlist-preview').classList.remove('visible');
+      document.getElementById('platform-icon').textContent = '🔗';
+      document.getElementById('platform-detected').style.display = 'none';
+      fetchedPlaylistData = null;
+      coverFileSelected = null;
+
+      // Reload playlists
+      console.log('🔄 Reloading playlists...');
+      await loadMyPlaylists();
+      
+      // Update stats
+      const currentCount = parseInt(document.getElementById('stat-playlists').textContent || '0');
+      document.getElementById('stat-playlists').textContent = currentCount + 1;
+    } else {
+      showToast('Error: ' + res.error);
+    }
+
+  } catch (e) {
+    console.error('❌ Save error:', e);
+    showToast('Something went wrong');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save to Dashboard';
+  }
+};
+
+// ── LOAD MY PLAYLISTS ──
+async function loadMyPlaylists() {
+  console.log('📥 Loading playlists for:', currentUser.uid);
+  
+  const scrollEl = document.getElementById('playlists-scroll');
+  const emptyEl = document.getElementById('playlists-empty');
+
+  if (!scrollEl || !emptyEl) {
+    console.error('❌ Playlist container elements not found!');
+    return;
+  }
+
+  scrollEl.innerHTML = '<p style="color: var(--dash-muted); padding: 20px;">Loading...</p>';
+
+  const res = await getUserPlaylists(currentUser.uid);
+  
+  console.log('📊 getUserPlaylists result:', res);
+  
+  if (!res.success) {
+    console.error('❌ Failed to load playlists:', res.error);
+    emptyEl.style.display = 'flex';
+    scrollEl.style.display = 'none';
+    scrollEl.innerHTML = '';
+    return;
+  }
+
+  if (!res.playlists || res.playlists.length === 0) {
+    console.log('ℹ️ No playlists found');
+    emptyEl.style.display = 'flex';
+    scrollEl.style.display = 'none';
+    scrollEl.innerHTML = '';
+    return;
+  }
+
+  console.log('✅ Rendering', res.playlists.length, 'playlists');
+  emptyEl.style.display = 'none';
+  scrollEl.style.display = 'flex';
+  scrollEl.innerHTML = '';
+
+  res.playlists.forEach(pl => {
+    const card = document.createElement('div');
+    card.className = 'playlist-card';
+    
+    const escTitle = escapeHtml(pl.title);
+    const escGenre = escapeHtml(pl.genre || 'No genre');
+    
+    card.innerHTML = `
+      <span class="playlist-card-platform">${PLATFORM_ICONS[pl.platform] || '🔗'}</span>
+      <div class="playlist-card-actions">
+        <button class="card-action-btn delete" onclick="confirmDeletePlaylist('${pl.id}', event)" title="Delete">
+          🗑
+        </button>
+      </div>
+      ${pl.coverURL
+        ? `<img class="playlist-card-cover" src="${escapeHtml(pl.coverURL)}" alt="${escTitle}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+           <div class="playlist-card-cover-placeholder" style="display:none;">${PLATFORM_ICONS[pl.platform] || '🎵'}</div>`
+        : `<div class="playlist-card-cover-placeholder">${PLATFORM_ICONS[pl.platform] || '🎵'}</div>`
+      }
+      <div class="playlist-card-body">
+        <div class="playlist-card-title">${escTitle}</div>
+        <div class="playlist-card-genre">${escGenre}</div>
+      </div>
+    `;
+    
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.card-action-btn')) return;
+      if (pl.sourceURL) window.open(pl.sourceURL, '_blank');
+    });
+    
+    scrollEl.appendChild(card);
+  });
+  
+  console.log('✅ Playlists rendered');
+}
+
+// ── DELETE PLAYLIST ──
+window.confirmDeletePlaylist = async (playlistId, event) => {
+  event.stopPropagation();
+  if (!confirm('Delete this playlist?')) return;
+  
+  const res = await dbDeletePlaylist(currentUser.uid, playlistId);
+  
+  if (res.success) {
+    showToast('Playlist deleted');
+    await loadMyPlaylists();
+    const currentCount = parseInt(document.getElementById('stat-playlists').textContent || '0');
+    document.getElementById('stat-playlists').textContent = Math.max(0, currentCount - 1);
+  } else {
+    showToast('Error: ' + res.error);
+  }
+};
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function showToast(msg) {
+  const el = document.getElementById('dash-toast');
+  if (el) {
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 3000);
+  }
+}
+window.showDashToast = showToast;
+
+fetch('auth-modal.html')
+  .then(r => r.text())
+  .then(html => { document.getElementById('auth-modal-container').innerHTML = html; })
+  .catch(() => {});
+</script>
+
+</body>
+</html>

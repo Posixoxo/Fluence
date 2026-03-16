@@ -1,92 +1,99 @@
-body{
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(86deg,#004643 0%, rgba(43, 43, 43, 1) 4%);
-}
-
-/* ....index.html....*/
-
-main {
-    flex: 1;
-  }
-
-/* --- Utility Container Positioning --- */
-.utility-container {
-    position: absolute;
-    top: 30px;
-    right: 70px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    z-index: 99; 
-}
-
-/* --- CSS for the Mobile Navigation Container --- */
-#mobile-nav-container {
-    z-index: 1000; 
-}
-
-/* --- Dark Mode Toggle Style (for the sun/moon icon) --- */
-#dark-mode-toggle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: none;
-    background-color: rgba(43, 43, 43, 1);
-    color: #2b2b2b; /* Dark text/icon */
-    font-size: 1.2rem;
-    margin-left: 50px;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-}
-
-/* --- Dark Mode CSS Variables --- */
 :root {
-    /* Your existing variables for primary colors */
-    --bg-main: linear-gradient(86deg,#004643 0%, rgba(43, 43, 43, 1) 4%);
-    --text-color: white;
-    --button-primary: #004643;
+  /* Base */
+  --bg-primary: #081917;      /* ink black */
+  --bg-secondary: #0d2b27;    /* slightly lifted ink */
+  --bg-card: #094c41;         /* pine teal */
+
+  /* Text */
+  --text-primary: #f5f5f5;
+  --text-secondary: #b8d4cf;
+  --text-muted: #7fa8a2;
+
+  /* Accents */
+  --accent-primary: #fcb790;  /* peach glow */
+  --accent-secondary: #3fb2a1;
+
+  /* UI Elements */
+  --button-bg: #094c41;
+  --button-hover: #0b5e52;
+  --button-text: #f5f5f5;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+
+  /* States */
+  --focus-ring: rgba(252, 183, 144, 0.5);
+  --hover-glow: rgba(252, 183, 144, 0.15);
+
+  /* components */
+    --border-thickness: 1.5px; 
+    --button-radius: 30px;
+    --animation-speed: 4s;
+    /* Solid background color (the gold part of your gradient) */
+    --button-bg-color: #004643; 
 }
 
 body.light-mode {
-    --bg-main: linear-gradient(86deg, #FFD700 0%, #FFFFFF 20%); /* Lighter, less saturated colors */
-    --text-color: #2b2b2b;
-    --button-primary: #00796B; /* A secondary, fresh color for light mode */
+  /* Base */
+  --bg-primary: #fdf6f1;      /* warm off-white */
+  --bg-secondary: #f4eae3;
+  --bg-card: #ffffff;
+
+  /* Text */
+  --text-primary: #081917;
+  --text-secondary: #094c41;
+  --text-muted: #5f7f79;
+
+  /* Accents */
+  --accent-primary: #fcb790;  /* peach glow */
+  --accent-secondary: #094c41;
+
+  /* UI Elements */
+  --button-bg: #094c41;
+  --button-hover: #0b5e52;
+  --button-text: #ffffff;
+
+  --border-subtle: rgba(9, 76, 65, 0.12);
+
+  /* States */
+  --focus-ring: rgba(9, 76, 65, 0.4);
+  --hover-glow: rgba(252, 183, 144, 0.25);
 }
 
-/* Apply variables to elements */
-body {
-    background: var(--bg-main);
-    color: var(--text-color);
-}
-.mood-grid button {
-    background-color: var(--button-primary);
-    color: var(--text-color);
-}
-/* You would need to update all elements using a fixed color to use a CSS Variable */
 
-body, .playlist-form, .playlist-card {
-    transition: background 0.5s ease, color 0.5s ease;
+body{
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+body.nav-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
 }
 
 
 .nbar {
-    color: #b8b7b4;
-    border-color: #004643;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 10px;
-    padding: 10px 0; /* Added padding for better visibility */
+    margin: 0 30px;
+    padding: 10px 0;
+}
+
+.logo-t{
+  width: 120px;
+  height: auto;
+  display: block;
+  max-width: 100%;
+  padding: 0;
 }
 
 .nbar h1{
     font-family: "Caprasimo", serif;
-    font-size: 1.8rem;
+    font-size: 20px;
     letter-spacing: 2px; 
     background: linear-gradient(90deg, #FFD700 0%, #004643 50%, #FFD700 100%);
     -webkit-background-clip: text;
@@ -96,8 +103,8 @@ body, .playlist-form, .playlist-card {
 }
 
 .nbar h1:hover {
-    cursor: pointer; /* Makes it clear it's clickable */
-    transform: scale(1.02); /* Slight scale-up */
+    cursor: pointer; 
+    transform: scale(1.02);
     transition: transform 0.3s ease-in-out;
 }
 
@@ -105,60 +112,118 @@ body, .playlist-form, .playlist-card {
     text-decoration: none;
 }
 
-#mobile-nav-container {
-    /* Initially hide the entire menu */
-    position: fixed; /* Keep it fixed over content */
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100vh; /* Full viewport height */
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
-
-    /* Default HIDDEN state */
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none; /* Crucial: ensures the hidden menu doesn't block clicks */
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    z-index: 100; /* Ensure it's on top of other content */
+.theme-toggle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-secondary);
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
 }
 
+.theme-toggle:hover {
+  background-color: var(--bg-secondary);
+  transform: rotate(20deg);
+}
+
+.theme-toggle:hover svg {
+  color: var(--surface);
+}
+
+.theme-toggle svg {
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.sun-icon {
+  display: none;
+}
+
+.moon-icon {
+  display: block;
+}
+
+[data-theme="light"] .sun-icon {
+  display: block;
+}
+
+[data-theme="light"] .moon-icon {
+  display: none;
+}
+
+#mobile-nav-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 65%;
+    height: 100vh; 
+    background-color: rgba(128, 128, 128, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px); 
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; 
+    transition: right 0.3s ease;
+    z-index: 999;
+}
 
 #mobile-nav {
-    /* Position the menu panel to the right side */
     position: absolute;
     top: 0;
     right: 0;
-    width: 70%; /* Adjust width as needed */
-    height: 100%;
-    background-color: rgba(43, 43, 43, 1); /* Dark menu background */
-    padding: 20px;
-
-    /* Menu links and close button inside the menu */
+    width: 80%;
+    height: 100vh;
+    padding: 14px 20px 20px 20px;
     display: flex;
     flex-direction: column;
     gap: 40px;
-
-    /* Initially push it off-screen to the right for a slide effect */
+    margin: 15px 0;
     transform: translateX(100%); 
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;  /* ← THE KEY FIX */
+    -webkit-overflow-scrolling: touch;
 }
 
 #mobile-nav a {
-    color: white;
+    color: var(--text-primary);
     text-decoration: none;
-    font-size: 1.2rem;
+    font-size: 16px;
     font-family: "Caprasimo", serif;
 }
 
-#menu-close-btn {
-    align-self: flex-end; /* Pushes the close icon to the right corner */
+#menu-open-btn{
+    display: block;
+    width: 16px;
+    height: auto;
+    margin-left: 40px;  
     cursor: pointer;
-    margin-bottom: 30px;
+    filter: var(--focus-ring);
 }
 
+#menu-close-btn {
+    display: block;
+    width: 14px;
+    height: auto;  
+    cursor: pointer;
+    margin: 0 12px 0 0;
+    align-self: flex-end;
+    filter: var(--focus-ring);
+}
+
+#mobile-nav svg {
+  color: var(--text-accent);
+  transition: all 0.3s ease;
+}
 
 #mobile-nav-container.open {
-    /* Visible state for the container */
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -168,18 +233,67 @@ body, .playlist-form, .playlist-card {
     transform: translateX(0);
 }
 
+#user-profile-section > div:first-child:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(63, 178, 161, 0.3);
+}
+
+#user-profile-section button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+#user-profile-section button:active {
+  transform: translateY(0);
+}
 
 .playlist-btn {
-    background: linear-gradient(135deg, #004643 0%, #d1ac00 250%);
-    color: #fff;
+    flex-direction: row ;
+    gap: 10px;
+    background: none;
+    color: var(--text-primary);
     border: none;
-    padding: 14px 28px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 50px;
+    padding: 10px 20px;
+    font-weight: 100;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    width: 100%;
+  }
+
+  .sight{
+    display: flex;
+    flex-direction: row;
+  }
+
+  .move{
+    margin: 40px 0 0 0;
+  }
+
+    /* Hidden class for auth control */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Visible class for playlist buttons */
+    .playlist-btn.visible {
+      display: flex !important;
+    }
+
+  .playlist-btn img{
+    display: block;
+    width: 20px;
+    height: auto;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .playlist-btn p{
+    margin: auto 0;
+    font-family: "Caprasimo", serif;
+    color: var(--text-primary);
+    font-size: 12px;
+    letter-spacing: 2px;
   }
   
   .playlist-btn:hover {
@@ -191,247 +305,208 @@ body, .playlist-form, .playlist-card {
   .social-icons{
     display: flex; 
     flex-direction: row; 
-    gap: 60px; 
-    margin: 20px 10px;
+    gap: 54px; 
+    margin: 20px 10px 50px 10px;
   }
 
-  /* Set up the base animation */
-@keyframes color-shift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+main {
+    flex: 1;
+  }
+
+.search-input-wrapper{
+  position: relative;
+  width: 100%;
+  max-width: 290px;
+  margin: 45px auto 95px auto;
 }
 
-/* Style for Happy Mood  browse.html */
-body.mood-happy {
-    background: linear-gradient(90deg, #FFD700, #FF8C00, #FFD700);
-    background-size: 400% 400%;
-    animation: color-shift 15s ease infinite;
-}
-body.mood-chill {
-    background: linear-gradient(90deg, #4568DC, #B0E0E6, #4568DC);
-    background-size: 400% 400%;
-    animation: color-shift 20s ease infinite reverse;
-}
-body.mood-workout {
-    background: linear-gradient(90deg, #f12711, #f5af19);
-    background-size: 400% 400%;
-    animation: color-shift 10s ease infinite;
-}
-body.mood-heartbreak {
-    background: linear-gradient(90deg, #ff6a88, #d66d75);
-    background-size: 400% 400%;
-    animation: color-shift 18s ease infinite;
+.search-icon{
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
 }
 
-/* ADDED: Visualizer styles */
-#visualizer {
-    display:flex;
-    gap:6px;
-    align-items:flex-end;
-    height:40px;
-    margin: 18px auto;
-    justify-content:center;
-}
-#visualizer span {
-    display:block;
-    width:8px;
-    background:#fff;
-    height:12px;
-    border-radius:3px;
-    animation: pulse 1s infinite ease-in-out;
-}
-#visualizer span:nth-child(2){ animation-delay:0.15s }
-#visualizer span:nth-child(3){ animation-delay:0.3s }
-#visualizer span:nth-child(4){ animation-delay:0.45s }
-#visualizer span:nth-child(5){ animation-delay:0.6s }
-
-@keyframes pulse {
-    0%,100% { height:12px; opacity:0.85; }
-    50% { height:40px; opacity:1; }
+.input{
+  width: 100%;
+  border: 1px solid transparent;
+  height: 50px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 10px;
+  padding-left: 45px; /* Space for icon + gap */
+  padding-right: 15px;
+  font-size: 16px;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
-/* subtle pulse/glow for mood transitions (Browse page only) */
-.mood-pulse {
-  transition: box-shadow 0.45s ease, filter 0.45s ease;
-  box-shadow: inset 0 0 80px rgba(255,255,255,0.03), 0 8px 40px rgba(0,0,0,0.25);
-  filter: saturate(1.06) brightness(1.03);
+.input::placeholder{
+  color: var(--text-accent);
 }
 
-/* optionally animate the visualizer's span bars when its 'active' */
-#visualizer.active span {
-  transform-origin: bottom center;
-  animation: visualizer-pop 0.7s ease-in-out infinite alternate;
-}
-@keyframes visualizer-pop {
-  from { transform: scaleY(1); opacity: 0.9; }
-  to   { transform: scaleY(2.2); opacity: 1; }
+.input:hover{
+  border: 1px solid var(--accent-primary);
 }
 
-
-/* Visualizer color changes per mood (ADDED) */
-body.mood-chill #visualizer span { background: #00f2fe; }
-body.mood-happy #visualizer span { background: #FFD700; }
-body.mood-workout #visualizer span { background: #f12711; }
-body.mood-heartbreak #visualizer span { background: #ff6a88; }
-
-/* ADDED: Playlist app styles (cards, controls) */
-.playlist-controls { max-width: 1000px; margin: 20px auto; padding: 0 18px; text-align: center; }
-.playlist-controls h2{
-    margin-top: 50px; 
-    font-family: "Caprasimo", serif;
-    letter-spacing: 2px;}
-.mood-grid { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin: 12px 0; }
-.mood-grid .mood-btn {
-    padding:10px 14px;
-    border-radius:24px;
-    border:none;
-    background:#004643;
-    color:white;
-    font-weight:600;
-    cursor:pointer;
-}
-.extra-controls { margin: 12px 0; }
-#randomVibeBtn { padding:8px 12px; background:#2b2b2b; color:#fff; border-radius:8px; border:none; cursor:pointer; font-family: "Caprasimo", serif;}
-
-.vibe-builder { display:flex; gap:10px; justify-content:center; align-items:center; margin-top: 12px; flex-wrap:wrap; }
-.vibe-builder select { padding:8px; border-radius:8px; background:var(--bg-input,#1E1E1E); color:var(--text-color,#fff); border:1px solid rgba(255,255,255,0.06); }
-.vibe-builder button{font-family: "Caprasimo", serif; border-radius: 10px; cursor: pointer;}
-.vibe-builder label{font-family: "Caprasimo", serif;}
-
-/* Playlist cards */
-.playlist-container { display:grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap:18px; padding: 18px; max-width:1200px; margin: 16px auto;}
-.playlist-card { background: rgba(0,0,0,0.35); border-radius:12px; padding:12px; color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
-.playlist-card img { width:100%; border-radius:8px; object-fit:cover; height:140px; }
-.playlist-card h3 { margin:10px 0 6px; font-size:1.05rem; }
-.playlist-card p { margin:0; color: #ddd; font-size:0.95rem; }
-.platform-links { margin-top:10px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
-.platform-links a { padding:8px 10px; border-radius:8px; background:rgba(255,255,255,0.06); color:#fff; text-decoration:none; font-weight:600; }
-
-/* Keep your existing footer styles (kept but cleaned) */
-hr{ border: none; border-top: 1px solid #004643; margin: 40px 0; }
-footer{ text-align:center; margin-top:20px; margin-bottom:20px; color:#b8b7b4; font-size:17px; font-family:"Caprasimo", serif; letter-spacing:2px; background: linear-gradient(90deg, #FFD700 0%, #004643 50%, #FFD700 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
-
-
-/*...index.html style continuation...*/
-.idiv-1 {
-    margin-top: 70px;
-    position: relative;
-    width: 300px;
-    margin-left: auto;
-    margin-right: auto;
+.input:focus{
+  outline: none;
+  border: 2px solid var(--accent-primary);
 }
 
-
-.search-arrow-btn {
-    position: absolute;
-    top: 50%; 
-    right: 5px;
-    transform: translateY(-50%); 
-    border: 1px solid transparent;
-    border-radius: 30px;
-
-    /* 🎨 Color and Style (Easy to change!) 🎨 */
-    background: #004643; 
-    cursor: pointer;
-    font-size: 1.2em;
-    font-weight: bold;
-    padding: 5px;
-
-    /* Set the initial color */
-    color: rgba(43, 43, 43, 1) /* Example: Blue */
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.search-arrow-btn:hover {
-    /* Change color on hover */
-    color: white; /* Example: Darker Blue */
-}
-
-.input-1{
-    align-items: center;
+.greeting-container {
     text-align: center;
-    justify-content: center;
-    border: 1px solid transparent;
-    padding: 10px 40px 10px 10px; 
-    border-radius: 30px;
-    max-width: 100%;
-    width: 100%;
-    height: 40px;
-    box-sizing: border-box;
-    font-family: serif;
+    margin: 50px 30px 30px 30px;
+    padding: 0 20px;
+  }
+
+.greeting-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+.mood-question {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-top: 5px;
+  }
+
+.mood-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px;
+    padding: 20px;
+    background-color: rgba(128, 128, 128, 0.08);
+    backdrop-filter: blur(20px);
+    border-radius: 10px;
+    -webkit-backdrop-filter: blur(20px);
+    background: var(--bg-card);
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
 }
 
-.mood-grid{
+.mood-grido h3{
+    text-align: center;
+}
+
+.mood-grido{
+  margin: 90px 20px 50px 20px;
+}
+
+.mood-button {
     display: flex;
-    flex-direction: column;
-    gap: 50px;
-    margin: 90px 30px 0 30px;
+    flex-direction: column; 
     align-items: center;
-    text-align: center;
     justify-content: center;
+    padding: 10px 15px;
+    background: transparent;
+    border: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease; 
 }
 
-.mood-grid button{
-    border: 1px solid transparent;
-    font-size: 17px;
-    border-radius: 30px;
-    max-width: 100%;
-    width: 300px;
-    height: 60px;
-    font-family: serif;
-    cursor: pointer;
-    background-color: #004643;
-    color: white;
-    border-top: 1px solid #d1ac00;
-    border-bottom: 1px solid #d1ac00;
-    
+.mood-emoji {
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    font-size: 24px;
+    padding: 15px;
+    border-radius: 12px;
+    background-color: var(--hover-glow); 
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.mood-button p {
+    margin: 0;
+    font-weight: 600;
+    font-size: 10px;
+    color: var(--text-primary);
+}
+
+.mood-button:hover .mood-emoji {
+    /* We call the keyframes here */
+    animation-duration: 0.6s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+.mood-emoji img {
+    object-fit: contain;
+}
+
+/* Optional: Slight pulse of the container background itself to stay "reactive" */
+.mood-emoji {
+    animation: background-glow 3s infinite ease-in-out;
+}
+
+@keyframes background-glow {
+    0%, 100% { background-color: var(--hover-glow); }
+    50% { background-color: rgba(128, 128, 128, 0.15); }
+}
+
+/* Tablet and Desktop: */
+@media (min-width: 768px) {
+    .mood-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+    }
 }
 
 .artist-section {
-    /* Center the entire section on the page */
     display: flex;
     justify-content: center;
-    margin-top: 100px; /* Reduced margin for better flow */
+    margin: 100px auto 110px auto;
     padding: 0 20px;
 }
 
 .artist-grid-container {
-    /* Flexbox for a responsive grid */
     display: flex;
     flex-wrap: wrap; /* Allows buttons to wrap to the next line */
-    justify-content: center; /* Center buttons within the grid */
-    gap: 15px; /* Consistent spacing between buttons */
-    max-width: 700px; /* Limits the overall size on large screens */
+    justify-content: center; 
+    gap: 15px; 
+    max-width: 700px;
     width: 100%;
 }
 
 .artist-button {
-    /* **KEY RESPONSIVE CHANGE:** Used a fixed width on mobile, and let flex-basis handle the sizing 
-    to fit two or three columns. */
     flex: 1 1 45%; /* Shorthand for flex-grow, flex-shrink, flex-basis */
-    max-width: 150px; /* Limits size on large screens */
-    height: 80px; /* Fixed height for visual consistency */
+    max-width: 180px; 
+    height: 150px; 
     
-    border-radius: 10px;
-    border: 1px solid var(--button-primary); /* Use a subtle color border */
-    background-color: var(--bg-surface, white); /* Use CSS variable for light/dark mode */
-    color: var(--button-primary); 
-    
-    /* Set a smooth transition on the transform property */
+    border-left: 1px solid rgba(128, 128, 128, 0.08);
+    border-top: 1px solid rgba(128, 128, 128, 0.08);
+    border-right: none;
+    border-bottom: none;
+    background-color: rgba(128, 128, 128, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    cursor: pointer;
     transition: transform 0.3s ease-in-out;
     /* Ensure the button content stays centered and readable */
     position: relative; 
-    z-index: 1; /* Default stacking order */
+    z-index: 1; 
 }
 
 .artist-button:hover {
-    /* Scale up the button to make it "pop" (1.05 = 5% larger) */
     transform: scale(1.05); 
-    /* Bring it slightly forward so it overlaps neighbors */
     z-index: 10; 
 }
 
-/* Ensure the content inside the button is centered */
 .butt-img {
     display: flex;
     flex-direction: row;
@@ -441,33 +516,21 @@ footer{ text-align:center; margin-top:20px; margin-bottom:20px; color:#b8b7b4; f
 }
 
 .img-1 {
-    width: 45px; /* Slightly smaller avatar */
-    height: 60px;
-    border-radius: 20%;
+    width: 75px;
+    height: 95px;
+    border-radius: 10%;
     object-fit: cover;
 }
 
 .butt-img p{
+    font-size: 10px;
     margin: 0;
     font-family: "Caprasimo", serif;
-    color: black;
+    color: var(--accent-secondary); 
 }
 
-
-/* --- VARIABLES FOR EASY TUNING --- */
-:root {
-    /* 1. REDUCED THICKNESS: Change this value to adjust the width of the color line */
-    --border-thickness: 1.5px; 
-    --button-radius: 30px;
-    --animation-speed: 4s;
-    /* This will be the solid background color (the gold part of your gradient) */
-    --button-bg-color: #004643; 
-}
-
-/* ======================================= */
-/* 2. THE ROTATING COLOR LAYER (::before) */
+/* THE ROTATING COLOR LAYER (::before) */
 /* New colors to match your dark/gold theme */
-/* ======================================= */
 
 .color-border-button::before {
     content: "";
@@ -493,10 +556,8 @@ footer{ text-align:center; margin-top:20px; margin-bottom:20px; color:#b8b7b4; f
     z-index: -2; 
 }
 
-/* ======================================= */
-/* 3. THE SOLID MASK LAYER (::after) */
+/* THE SOLID MASK LAYER (::after) */
 /* This uses your primary gold color for the button fill */
-/* ======================================= */
 
 .color-border-button::after {
     content: "";
@@ -508,14 +569,12 @@ footer{ text-align:center; margin-top:20px; margin-bottom:20px; color:#b8b7b4; f
     right: var(--border-thickness);
     bottom: var(--border-thickness);
     
-    background-color: var(--button-bg-color); /* Uses #004643 */
+    background-color: var(--bg-primary); 
     border-radius: var(--button-radius);
     z-index: -1;
 }
 
-/* ======================================= */
 /* Remaining CSS (No changes needed for effect) */
-/* ======================================= */
 
 .butt-3 {
     display: flex;
@@ -550,7 +609,7 @@ footer{ text-align:center; margin-top:20px; margin-bottom:20px; color:#b8b7b4; f
     justify-content: center;
     align-items: center;
     gap: 5px;
-    color: white; 
+    color: var(--accent-primary); 
     z-index: 5; 
     position: relative; 
 }
@@ -578,254 +637,9 @@ footer{ text-align:center; margin-top:20px; margin-bottom:20px; color:#b8b7b4; f
     100% { transform: translateY(-8px); }
 }
 
-hr{
-    border: none;
-    border-top: 1px solid #004643;
-    margin: 40px 0;
-}
 
-footer{
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    color: #b8b7b4;
-    font-size: 17px;
-    font-family: serif;
-    letter-spacing: 2px; 
-    background: linear-gradient(90deg, #FFD700 0%, #004643 50%, #FFD700 100%);        
-    -webkit-background-clip: text;
-    background-clip: text;   
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-}
-
-
-/* Playlist Form Styling */
-/* Container */
-
-/* --- Dark Mode/Light Mode Variables (in your CSS) --- */
-:root {
-    /* Dark Mode Defaults */
-    --bg-main: linear-gradient(86deg, #004643 0%, rgba(43, 43, 43, 1) 4%);
-    --bg-surface: #2B2B2B; /* For cards/forms */
-    --bg-input: #1E1E1E; /* For inputs */
-    --text-color: white;
-    --text-accent: #f5f5f5;
-    --button-primary: #004643;
-}
-
-body.light-mode {
-    /* Light Mode Settings */
-    --bg-main: linear-gradient(86deg, #FFFFFF 0%, #FFFFFF 20%);
-    --bg-surface: #FFFFFF;
-    --bg-input: #f0f0f0;
-    --text-color: #2b2b2b;
-    --text-accent: #444;
-    --button-primary: #00796B; /* Teal */
-}
-
-.playlist-form {
-    max-width: 500px;
-    margin: 20px auto;
-    padding: 30px;
-    background: var(--bg-surface);
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    color: var(--text-color); 
-  }
-  
-  /* Heading */
-  .playlist-form h2 {
-    text-align: center;
-    margin-bottom: 40px;
-    color: var(--button-primary);  /* your warm gold */
-    font-size: 20px;
-    font-family: "Caprasimo", serif;
-  }
-  
-  /* Labels */
-  .playlist-form label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 300;
-    color: var(--text-accent);
-    font-family: "Caprasimo", serif;
-  }
-  
-  /* Inputs & Textarea */
-  .playlist-form input,
-  .playlist-form select,
-  .playlist-form textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    border: 1px solid;
-    border-color: var(--text-accent);
-    border-radius: 8px;
-    background: var(--bg-input);
-    color: var(--text-color);
-    font-size: 1rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .playlist-form input:focus,
-  .playlist-form select:focus,
-  .playlist-form textarea:focus {
-    outline: none;
-    border-color: #004643;
-    box-shadow: 0 0 0 3px rgba(156, 91, 0, 0.3);
-  }
-  
-  /* Button */
-  .playlist-form button {
-    display: inline-block;
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #d1ac00 0%, #00796B 100%);
-    color: #b8b7b4;
-    border: none;
-    border-radius: 50px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    font-family: "Caprasimo", serif;
-  }
-  
-  .playlist-form button:hover {
-    transform: translateY(-2px);
-    background: linear-gradient(135deg, #00796B 0%, #d1ac00 100%);
-    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.3);
-  }
-  
-  /* Placeholder text */
-  .playlist-form input::placeholder,
-  .playlist-form textarea::placeholder {
-    color: #aaa;
-    font-size: 0.95rem;
-    font-family: "Caprasimo", serif;
-  }
-
-  /* Browse.html other moods section */
-.top-image{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0 10px;
-    padding: 10px 0;
-}
-
-.APP-1{
-    max-width: 100%;
-    display: block;
-    width: 60px;
-    height: auto;
-}
-
-.top-image:last-of-type {
-    margin-top: 150px;  /* adjust until it clears the container */
-    margin-bottom: 20px; /* keep some space above footer */
-  }
-  
-  .top-image:last-of-type .APP-1 {
-    width: clamp(40px, 6vw, 80px); /* still responsive */
-    height: auto;
-  }
-
-  /*.... PickAPlatform.html ....*/
-
-.container{
-    border: 1px solid transparent;
-    margin: 40px auto 80px auto;
-    max-width: 900px;
-}
-
-.container h2{
-    text-align: center;
-    color: #b8b7b4;
-    font-size: 18px;
-    font-family: serif;
-    letter-spacing: 2px; 
-    background: linear-gradient(90deg, #FFD700 0%, #004643 50%, #FFD700 100%);        
-    -webkit-background-clip: text;
-    background-clip: text;   
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-}
-
-.logos-link{
-    display: flex;
-    flex-wrap: wrap; 
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 70px;
-    margin: 100px auto 80px auto;
-    max-width: 600px;
-}
-
-.logo{
-    max-width: 100%;
-    display: block;
-    width: 90px;
-    height: auto;
-}
-
-.logos-link a {
-    /* Allow link to shrink/grow and set a basis width */
-    flex: 0 1 90px; 
-    /* This ensures they don't grow past the logo's width, which is 90px */
-    width: 90px;
-}
-
-/* browse.html playlist styles*/
-.loading {
-    color: #888;
-    font-style: italic;
-  }
-  
-  .error {
-    color: red;
-  }
-  
-  .track-card {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    background: #1e1e1e;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    transition: transform 0.2s ease;
-  }
-  
-  .track-card:hover {
-    transform: scale(1.03);
-  }
-
-  .track-info h3 {
-    margin: 0;
-    color: #fff;
-  }
-  
-  .track-info p {
-    margin: 4px 0;
-    color: #ccc;
-  }
-  
-  .play-btn {
-    color: #1DB954;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  .play-btn:hover {
-    text-decoration: underline;
-  }
-
-  /* index.html search results styles */
-
+/* index.html search results styles */
+/* unresolved */
   .search-results {
     display: flex;
     flex-direction: column;
@@ -837,8 +651,8 @@ body.light-mode {
   }
   
   .track {
-    background: #1e1e1e; /* dark background for contrast */
-    color: white;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     border-radius: 12px;
     padding: 15px;
     margin: 12px 0;
@@ -885,6 +699,429 @@ body.light-mode {
     color: #1ed760;
   }
 
+/* --- BROWSE.HTML STYLES --- */
+
+/* Playlist app styles (cards, controls) */
+.playlist-controls { max-width: 1000px; margin: 20px auto; padding: 0 18px; text-align: center; }
+.playlist-controls h2{
+    margin: 50px 0 30px 0; 
+    font-family: "Caprasimo", serif;
+    letter-spacing: 2px;}
+
+/* VIBE BUILDER  */
+
+.vibe-builder {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+  padding: 24px;
+  background-color: rgba(128, 128, 128, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); 
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vibe-builder label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ✅ MODERN DROPDOWN STYLES */
+.vibe-builder select,
+#timeOfDay,
+#energy,
+#vibeMood {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  
+  /* Layout */
+  width: 100%;
+  padding: 14px 40px 14px 16px;
+  
+  /* Background */
+  background: var(--bg-card);
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path fill="%23FCB790" d="M1.41 0L6 4.58 10.59 0 12 1.42l-6 6-6-6z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px;
+  
+  /* Border */
+  border: 2px solid rgba(252, 183, 144, 0.2);
+  border-radius: 12px;
+  
+  /* Text */
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1.5;
+  
+  /* Cursor */
+  cursor: pointer;
+  
+  /* Transition */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Shadow */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover State */
+.vibe-builder select:hover,
+#timeOfDay:hover,
+#energy:hover,
+#vibeMood:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(252, 183, 144, 0.3);
+}
+
+/* Focus State */
+.vibe-builder select:focus,
+#timeOfDay:focus,
+#energy:focus,
+#vibeMood:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px rgba(252, 183, 144, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Disabled State */
+.vibe-builder select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Option Styling (Limited browser support) */
+.vibe-builder select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 12px;
+}
+
+/* BUILD MY VIBE BUTTON */
+#buildVibeBtn,
+#randomVibeBtn {
+  grid-column: 1 / -1;
+  padding: 16px 32px;
+  background: var(--accent-secondary);
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(252, 183, 144, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#buildVibeBtn:hover,
+#randomVibeBtn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(252, 183, 144, 0.6);
+}
+
+#buildVibeBtn:active,
+#randomVibeBtn:active {
+  transform: translateY(-2px);
+}
+
+#buildVibeBtn:disabled,
+#randomVibeBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* SPINNER ANIMATION */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+select,
+  #timeOfDay,
+  #energy,
+  #vibeMood {
+    margin: 10px 0;
+  }
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .vibe-builder {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 14px;
+  }
+  
+  .vibe-builder select,
+  #timeOfDay,
+  #energy,
+  #vibeMood {
+    padding: 12px 36px 12px 14px;
+    font-size: 14px;
+  }
+  
+  .platform-filter-btn {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+  
+  #buildVibeBtn,
+  #randomVibeBtn {
+    padding: 14px 24px;
+    font-size: 14px;
+  }
+}
+
+/* LIGHT MODE ADJUSTMENTS */
+body.light-mode .vibe-builder select,
+body.light-mode #timeOfDay,
+body.light-mode #energy,
+body.light-mode #vibeMood {
+  background-color: #ffffff;
+  color: #1a1a1a;
+  border-color: rgba(252, 183, 144, 0.3);
+}
+
+body.light-mode .vibe-builder select:hover,
+body.light-mode #timeOfDay:hover,
+body.light-mode #energy:hover,
+body.light-mode #vibeMood:hover {
+  box-shadow: 0 6px 16px rgba(252, 183, 144, 0.4);
+}
+
+body.light-mode .platform-filter-btn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+body.light-mode .platform-filter-btn:hover {
+  color: #1a1a1a;
+}
+
+/* Visualizer styles */
+#visualizer {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+    height: 40px;
+    margin: 18px auto;
+    justify-content: center;
+}
+#visualizer span {
+    display: block;
+    width: 8px;
+    background: #fff;
+    height: 12px;
+    border-radius: 3px;
+    animation: pulse 1s infinite ease-in-out;
+}
+#visualizer span:nth-child(2){ animation-delay:0.15s }
+#visualizer span:nth-child(3){ animation-delay:0.3s }
+#visualizer span:nth-child(4){ animation-delay:0.45s }
+#visualizer span:nth-child(5){ animation-delay:0.6s }
+
+@keyframes pulse {
+    0%,100% { height:12px; opacity:0.85; }
+    50% { height:40px; opacity:1; }
+}
+
+/* subtle pulse/glow for mood transitions (Browse page) */
+.mood-pulse {
+  transition: box-shadow 0.45s ease, filter 0.45s ease;
+  box-shadow: inset 0 0 80px rgba(255,255,255,0.03), 0 8px 40px rgba(0,0,0,0.25);
+  filter: saturate(1.06) brightness(1.03);
+}
+
+/* optionally animate the visualizer's span bars when its 'active' */
+#visualizer.active span {
+  transform-origin: bottom center;
+  animation: visualizer-pop 0.7s ease-in-out infinite alternate;
+}
+@keyframes visualizer-pop {
+  from { transform: scaleY(1); opacity: 0.9; }
+  to   { transform: scaleY(2.2); opacity: 1; }
+}
+
+/* Visualizer color changes per mood (ADDED) */
+body.mood-chill #visualizer span { background: #00f2fe; }
+body.mood-happy #visualizer span { background: #FFD700; }
+body.mood-workout #visualizer span { background: #f12711; }
+body.mood-heartbreak #visualizer span { background: #ff6a88; }
+
+
+/* Playlist cards */
+.playlist-container { display:grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap:18px; padding: 18px; max-width:1200px; margin: 16px auto;}
+.playlist-card { background: rgba(0,0,0,0.35); border-radius:12px; padding:12px; color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
+.playlist-card img { width:100%; border-radius:8px; object-fit:cover; height:140px; }
+.playlist-card h3 { margin:10px 0 6px; font-size:1.05rem; }
+.playlist-card p { margin:0; color: #ddd; font-size:0.95rem; }
+.platform-links { margin-top:10px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+.platform-links a { padding:8px 10px; border-radius:8px; background:rgba(255,255,255,0.06); color:#fff; text-decoration:none; font-weight:600; }
+
+
+/* footer styles */
+hr{
+    border: none;
+    border-top: 1px solid #004643;
+    margin: 40px 0;
+}
+
+footer{
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: #b8b7b4;
+    font-size: 17px;
+    font-family: serif;
+    letter-spacing: 2px; 
+    background: linear-gradient(90deg, #FFD700 0%, #004643 50%, #FFD700 100%);        
+    -webkit-background-clip: text;
+    background-clip: text;   
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+/* browse.html playlist styles*/
+.loading {
+    color: #888;
+    font-style: italic;
+  }
+  
+  .error {
+    color: red;
+  }
+  
+  .track-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--bg-card);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    transition: transform 0.2s ease;
+  }
+  
+  .track-card:hover {
+    transform: scale(1.03);
+  }
+
+  .track-info h3 {
+    margin: 0;
+    color: #fff;
+  }
+  
+  .track-info p {
+    margin: 4px 0;
+    color: #ccc;
+  }
+  
+  .play-btn {
+    color: #1DB954;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .play-btn:hover {
+    text-decoration: underline;
+  }
+
+
+/*.... PickAPlatform.html ....*/
+.container{
+    border: 1px solid transparent;
+    margin: 40px auto 80px auto;
+    max-width: 900px;
+}
+
+.container h2{
+    padding: 20px 30px;
+    text-align: center;
+    color: #b8b7b4;
+    font-size: 18px;
+    font-family: serif;
+    letter-spacing: 2px; 
+    background: linear-gradient(90deg, #FFD700 0%, #004643 50%, #FFD700 100%);        
+    -webkit-background-clip: text;
+    background-clip: text;   
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.logos-link{
+    display: flex;
+    flex-wrap: wrap; 
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 70px;
+    margin: 70px auto 70px auto;
+}
+
+.logo{
+    max-width: 100%;
+    display: block;
+    width: 70px;
+    height: auto;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* hover effect */
+.logo {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logo:hover {
+  transform: translateY(-10px) scale(1.05);
+  filter: drop-shadow(0 16px 32px rgba(252, 183, 144, 0.4));
+}
+
+.logo:active {
+  transform: translateY(-5px) scale(1.02);
+}
+
+/* INLINE STYLES FOR ANIMATIONS */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.player-container {
+  transition: opacity 0.2s ease;
+  min-height: 100px; /* Prevents layout shift */
+}
+
   /* PickAPlatform iframe style */
   .player-container {
     margin-top: 40px;
@@ -903,6 +1140,37 @@ body.light-mode {
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   }
+
+/* PLATFORM FILTER BUTTONS */
+.platform-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 20px;
+  background: var(--bg-secondary);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.platform-filter-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.platform-filter-btn.active {
+  background: var(--accent-secondary);
+  border-color: transparent;
+  color: #000;
+  box-shadow: 0 6px 20px rgba(252, 183, 144, 0.4);
+}
+
   
   /* 🔮 Coming Soon Card Styles */
   .coming-soon-card {
@@ -959,7 +1227,346 @@ body.light-mode {
   }
   
   
-  
+
+  /* LOADING STATES & ERROR BOUNDARIES - Add to your existing style.css */
+
+/* ✅ SPINNER ANIMATION */
+.spinner {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  border: 5px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Dark mode spinner */
+body:not(.light-mode) .spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-primary);
+}
+
+/* Light mode spinner */
+body.light-mode .spinner {
+  border-color: rgba(0, 0, 0, 0.1);
+  border-top-color: var(--accent-primary);
+}
+
+/* ✅ SLIDE DOWN ANIMATION for Error Banner */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ✅ LOADING STATE for Search Results */
+#search-results.loading {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ ERROR STATE Styling */
+.error-container {
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 2px solid rgba(255, 107, 107, 0.3);
+  border-radius: 16px;
+  margin: 20px;
+}
+
+.error-container h3 {
+  color: #ff6b6b;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.error-container p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* ✅ RETRY BUTTON Styling */
+.retry-button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #1DB954, #1ed760);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(29, 185, 84, 0.4);
+}
+
+.retry-button:active {
+  transform: translateY(0);
+}
+
+.retry-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ✅ DISABLED STATE for Inputs */
+input:disabled,
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+/* ✅ RATE LIMIT WARNING Badge */
+.rate-limit-badge {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  animation: slideInFromBottom 0.4s ease;
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ✅ PULSE ANIMATION for Active Visualizer */
+#visualizer.active span {
+  animation: visualizer-pulse 0.6s ease-in-out infinite alternate !important;
+}
+
+@keyframes visualizer-pulse {
+  from {
+    height: 12px;
+    opacity: 0.7;
+  }
+  to {
+    height: 40px;
+    opacity: 1;
+  }
+}
+
+/* ✅ SKELETON LOADING for Playlist Cards */
+.skeleton-card {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 12px;
+  height: 300px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ✅ SMOOTH FADE IN for Results */
+.results-inner {
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ SEARCH INPUT Loading State */
+.input.loading {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 0%,
+    var(--bg-card) 50%,
+    var(--bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: input-loading 1.5s infinite;
+}
+
+@keyframes input-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ✅ HOVER EFFECTS for Interactive Elements */
+.mood-button:hover:not(:disabled),
+.artist-button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.mood-button:active:not(:disabled),
+.artist-button:active:not(:disabled) {
+  transform: translateY(0) scale(1);
+}
+
+/* ✅ FOCUS STATES for Accessibility */
+.input:focus,
+.mood-button:focus,
+.artist-button:focus,
+button:focus {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ✅ MOBILE OPTIMIZATIONS */
+@media (max-width: 768px) {
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+  }
+
+  .error-container {
+    margin: 10px;
+    padding: 30px 15px;
+  }
+
+  .error-container h3 {
+    font-size: 18px;
+  }
+
+  .retry-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .rate-limit-badge {
+    bottom: 10px;
+    right: 10px;
+    font-size: 12px;
+    padding: 10px 16px;
+  }
+}
+
+/* ✅ IMPROVED TRACK CARD Hover States */
+.result-track,
+.track-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.result-track:hover,
+.track-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ✅ PLAYLIST CARD Improvements */
+.result-playlist-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.result-playlist-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* ✅ AUDIO PLAYER Styling */
+audio.audio-player {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 8px;
+  outline: none;
+}
+
+audio.audio-player::-webkit-media-controls-panel {
+  background-color: var(--bg-card);
+}
+
+/* ✅ NO RESULTS Message */
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.no-results svg {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+/* ✅ CONNECTION ERROR Icon */
+.connection-error {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.connection-error::before {
+  content: "📡";
+  font-size: 64px;
+  display: block;
+  margin-bottom: 20px;
+  opacity: 0.5;
+  animation: pulse-icon 2s infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+
+
+
+
   
 
   

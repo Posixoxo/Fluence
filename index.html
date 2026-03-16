@@ -4,29 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moodify</title>
+    <script type="module" src="firebase-config/firebase-config.js"></script>
+    <script type="module" src="auth.js"></script>
+    <script src="greeting.js"></script> 
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Young+Serif&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Young+Serif&display=swap" rel="stylesheet">
+    
+    <!-- ✅ SEARCH OVERLAY STYLES -->
+    <style>
+      /* Blur background overlay */
+      #search-blur-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(8, 25, 23, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        z-index: 9998;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+      
+      #search-blur-overlay.active {
+        display: block;
+        opacity: 1;
+      }
+      
+      /* Animated search container */
+      .search-input-wrapper {
+        position: relative;
+        z-index: 9999;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .search-input-wrapper.overlay-active {
+        position: fixed !important;
+        top: 80px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        max-width: 600px !important;
+        width: 90% !important;
+        z-index: 10000 !important;
+      }
+      
+      /* Results container for overlay */
+      #search-results-overlay {
+        display: none;
+        position: fixed;
+        top: 160px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 900px;
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+        z-index: 10000;
+        padding-bottom: 40px;
+      }
+      
+      #search-results-overlay.active {
+        display: block;
+      }
+      
+      /* Smooth scroll for results */
+      #search-results-overlay::-webkit-scrollbar {
+        width: 8px;
+      }
+      
+      #search-results-overlay::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+      }
+      
+      #search-results-overlay::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+      }
+      
+      #search-results-overlay::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+      
+      /* Close button */
+      #close-search-btn {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        z-index: 10001;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+      
+      #close-search-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+      }
+      
+      body.search-overlay-open {
+        overflow: hidden;
+      }
+    </style>
 </head>
 <body>
-    <div class="utility-container">
-        <button id="dark-mode-toggle" aria-label="Toggle Dark/Light Mode">
-            ☀️
-        </button>
-    </div>
+
+    <!-- ✅ BLUR OVERLAY -->
+    <div id="search-blur-overlay"></div>
+    
+    <!-- ✅ CLOSE BUTTON -->
+    <button id="close-search-btn" aria-label="Close search">×</button>
 
     <header>
         <nav class="nbar">
-            <a href="index.html" class="logo-t"><h1>Moodify</h1></a>
-            <img src="Images/icon-menu.svg" alt="menu-open" id="menu-open-btn">
+            <a href="index.html" class="logo-t"><h1>Fluence</h1></a>
+
+            <button class="theme-toggle" id="dark-mode-toggle" aria-label="Toggle Dark/Light Mode">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+            </button>
+
+            <img src="Images/icon-hamburger.svg" alt="menu-open" id="menu-open-btn">
         </nav>
 
         <div id="mobile-nav-container">
             <div id="mobile-nav">
-                <img src="Images/icon-menu-close.svg" alt="close menu" id="menu-close-btn">
-                <a href="index.html" class="playlist-btn">Home</a>
-                <a href="Addyourplaylist.html" class="playlist-btn">Add Your Playlist🎶</a>
+                <img src="Images/icon-close.svg" alt="close menu" id="menu-close-btn">
+                <a href="index.html" class="playlist-btn sight move"><img src="Images/Home.png" alt="home"><p>Home</p></a>
+                <a href="Addyourplaylist.html" class="playlist-btn sight"><img src="Images/Library.png" alt="add-playlist"><p>Add Your Playlist</p></a>
+
+                <a href="browse-community.html" class="playlist-btn hidden" data-auth-required style="display:none;">
+                  <img src="Images/Explore.png" alt="explore"><p>Explore</p>
+                </a>
+
+                <a href="dashboard.html" class="playlist-btn hidden" data-auth-required style="display:none;"><img src="Images/Dashboard.png" alt="dashboard"><p>Dashboard</p></a>
+
+                <button id="signin-btn" data-no-auth onclick="openAuthModal('signin')" style="background: var(--bg-secondary); border: none; padding: 12px 24px; border-radius: 20px; color: white; cursor: pointer; font-weight: 600; margin-top: 20px; width: 100%;">
+                   Sign In
+                </button>
+
+                <div id="user-profile-section" data-auth-required style="display: none; margin-top: 20px;">
+                  <div onclick="goToMyProfile()" style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px; background: rgba(128, 128, 128, 0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 12px; cursor: pointer; border: none; margin-bottom: 12px; transition: transform 0.2s;">
+                    <img data-user-photo 
+                        style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: none;" 
+                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23333' width='100' height='100'/%3E%3Ctext fill='%23ccc' font-size='40' x='50%25' y='50%25' text-anchor='middle' dy='.35em'%3E👤%3C/text%3E%3C/svg%3E"
+                        alt="Profile">
+                    <div style="flex: 1; min-width: 0;">
+                      <div data-user-name style="font-weight: 700; color: var(--text-primary); font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                      <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">View Profile →</div>
+                    </div>
+                  </div>
+                  <button onclick="signOutUser()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #ff6b6b, #ee5a6f); border: none; border-radius: 12px; color: white; cursor: pointer; font-weight: 700; text-align: center; font-size: 15px; transition: transform 0.2s;">
+                    🚪 Sign Out
+                  </button>
+                </div>
+
               <div class="social-icons">
                 <a href="https://www.instagram.com/posixoxo_/"><img src="Images/icon-instagram.svg" alt="instagram"></a>
                 <a href="javascipt.void"><img src="Images/icon-facebook.svg" alt="facebook"></a>
@@ -34,28 +193,67 @@
               </div>
             </div>
         </div>
+        
     </header>
 
     <main>
         <section>
-            <div class="idiv-1">
-                <input type="text" placeholder="Find playlists by keyword" class="input-1" id="searchInput">
-             <button class="search-arrow-btn" aria-label="Search" id="searchButton">
-                &#x279C;  
-             </button>
+
+            <div class="greeting-container">
+                <h2 id="dynamic-greeting" class="greeting-text">Good morning!</h2>
+                <p class="mood-question">How are you feeling right now?</p>
             </div>
 
-            <section class=" display: flex; flex-direction: column; align-items: center;">
+            <!-- ✅ SEARCH BAR (animates to top when clicked) -->
+            <div class="search-input-wrapper" id="search-wrapper">
+                <input type="text" placeholder="Find playlists by keyword" class="input" id="searchInput">
+                <img src="Images/icon-search.svg" alt="search" class="search-icon" id="searchButton">
+            </div>
+
+            <!-- ✅ RESULTS CONTAINER (shows in overlay when search active) -->
+            <div id="search-results-overlay">
                 <div id="search-results" class="results-container"></div>
-            </section>
+            </div>
             
-            <div class="mood-grid">
-                <button class="mood-button" data-mood="happy">Happy</button>
-                <button class="mood-button" data-mood="chill">Chill</button>
-                <button class="mood-button" data-mood="workout">Workout</button>
-                <button class="mood-button" data-mood="heartbreak">Heartbreak</button>
+            <div class="mood-grido">
+              <h3>Tap a Mood:</h3>
+              <div class="mood-grid">
                 
+                <button class="mood-button" data-mood="happy">
+                  <picture class="mood-emoji">
+                    <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.webp" type="image/webp">
+                    <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.gif" alt="😊" width="42" height="42">
+                  </picture>
+                  <p>Happy</p>
+                </button>
+
+                <button class="mood-button" data-mood="chill">
+                  <picture class="mood-emoji">
+                    <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f30a/512.webp" type="image/webp">
+                    <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f30a/512.gif" alt="🌊" width="42" height="42">
+                  </picture>
+                  <p>Chill</p>
+                </button>
+
+                <button class="mood-button" data-mood="workout">
+                  <picture class="mood-emoji">
+                    <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/26a1/512.webp" type="image/webp">
+                    <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/26a1/512.gif" alt="⚡" width="42" height="42">
+                  </picture>
+                  <p>Workout</p>
+                </button>
+
+                <button class="mood-button" data-mood="heartbreak">
+                  <picture class="mood-emoji">
+                    <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f494/512.webp" type="image/webp">
+                    <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f494/512.gif" alt="💔" width="42" height="42">
+                  </picture>
+                  <p>Heartbreak</p>
+                </button>
+
               </div>
+            </div>
+
         </section>
 
         <section class="artist-section">
@@ -81,6 +279,13 @@
                         <p>Burna Boy</p>
                     </div>
                 </button>
+
+                <button class="artist-button" data-index="3">
+                    <div class="butt-img">
+                        <img src="Images/Tems.jpg" alt="Tems" class="img-1">
+                        <p>Tems</p>
+                    </div>
+                </button>
                 
             </div>
         </section>
@@ -98,10 +303,233 @@
     </section>
 <hr>
     <footer>
-        <span>&copy2025 Moodify. All Right Reserved.</span>
+        <span>&copy2025 Fluence. All Right Reserved.</span>
     </footer>
 
- <!-- 👇 VERY IMPORTANT: script should load last -->
-    <script src="script.js"></script>
+
+<!-- Load Auth Modal Dynamically -->
+<div id="auth-modal-container"></div>
+
+<script type="module">
+// ✅ DEFINE GLOBAL AUTH FUNCTIONS FIRST
+import { signUp, signIn, signInWithGoogle, resetPassword } from './auth.js';
+
+window.handleGoogleSignIn = async () => {
+  const result = await signInWithGoogle();
+  if (result.success) {
+    closeAuthModal();
+    showToast('Signed in with Google!');
+  } else {
+    alert('Google sign in failed: ' + result.error);
+  }
+};
+
+window.switchAuthTab = (tab) => {
+  document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
+  const form = document.getElementById(`${tab}-form`);
+  if (form) form.style.display = 'block';
+  
+  document.querySelectorAll('.auth-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  
+  document.querySelectorAll('.auth-error, .auth-success').forEach(e => {
+    if (e) e.style.display = 'none';
+  });
+};
+
+function showToast(message) {
+  const toast = document.getElementById('success-toast');
+  if (toast) {
+    const msgEl = document.getElementById('toast-message');
+    if (msgEl) msgEl.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  }
+}
+window.showToast = showToast;
+
+fetch('auth-modal.html')
+  .then(response => response.text())
+  .then(html => {
+    document.getElementById('auth-modal-container').innerHTML = html;
+    setTimeout(initAuthHandlers, 100);
+  })
+  .catch(error => {
+    console.error('❌ Failed to load auth modal:', error);
+  });
+
+function initAuthHandlers() {
+  const signinForm = document.getElementById('signin-form-element');
+  if (signinForm) {
+    signinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signin-email').value;
+      const password = document.getElementById('signin-password').value;
+      const errorEl = document.getElementById('signin-error');
+      const btn = e.target.querySelector('button[type="submit"]');
+      
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      errorEl.style.display = 'none';
+      
+      const result = await signIn(email, password);
+      
+      if (result.success) {
+        closeAuthModal();
+        showToast('Welcome back!');
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    });
+  }
+
+  const signupForm = document.getElementById('signup-form-element');
+  if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const errorEl = document.getElementById('signup-error');
+      const btn = e.target.querySelector('button[type="submit"]');
+      
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+      errorEl.style.display = 'none';
+      
+      const result = await signUp(email, password, name);
+      
+      if (result.success) {
+        closeAuthModal();
+        showToast('Account created! Welcome!');
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    });
+  }
+
+  const resetForm = document.getElementById('reset-form-element');
+  if (resetForm) {
+    resetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('reset-email').value;
+      const errorEl = document.getElementById('reset-error');
+      const successEl = document.getElementById('reset-success');
+      
+      const result = await resetPassword(email);
+      
+      if (result.success) {
+        successEl.textContent = 'Reset email sent! Check your inbox.';
+        successEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        e.target.reset();
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = 'block';
+        successEl.style.display = 'none';
+      }
+    });
+  }
+}
+
+window.toggleUserMenu = () => {
+  const dropdown = document.getElementById('user-dropdown');
+  if (dropdown) {
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  }
+};
+</script>
+
+<script type="module">
+import { auth } from './firebase-config/firebase-config.js';
+
+window.goToMyProfile = function() {
+  const user = auth.currentUser;
+  
+  if (user) {
+    window.location.href = `profile.html?user=${user.uid}`;
+  } else {
+    if (typeof window.openAuthModal === 'function') {
+      window.openAuthModal('signin');
+    } else {
+      alert('Please sign in first');
+    }
+  }
+};
+</script>
+
+<!-- ✅ SEARCH OVERLAY ANIMATION LOGIC -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('searchInput');
+  const searchButton = document.getElementById('searchButton');
+  const searchWrapper = document.getElementById('search-wrapper');
+  const blurOverlay = document.getElementById('search-blur-overlay');
+  const closeBtn = document.getElementById('close-search-btn');
+  const resultsOverlay = document.getElementById('search-results-overlay');
+  
+  let isOverlayActive = false;
+
+  // Open overlay (animate search bar to top)
+  function openSearchOverlay() {
+    if (isOverlayActive) return;
+    
+    isOverlayActive = true;
+    document.body.classList.add('search-overlay-open');
+    blurOverlay.classList.add('active');
+    searchWrapper.classList.add('overlay-active');
+    resultsOverlay.classList.add('active');
+    closeBtn.style.display = 'flex';
+    searchInput.removeAttribute('readonly');
+    searchInput.focus();
+  }
+
+  // Close overlay
+  function closeSearchOverlay() {
+    if (!isOverlayActive) return;
+    
+    isOverlayActive = false;
+    document.body.classList.remove('search-overlay-open');
+    blurOverlay.classList.remove('active');
+    searchWrapper.classList.remove('overlay-active');
+    resultsOverlay.classList.remove('active');
+    closeBtn.style.display = 'none';
+  }
+
+  // Event listeners
+  searchInput.addEventListener('click', openSearchOverlay);
+  searchInput.addEventListener('focus', openSearchOverlay);
+  searchButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!isOverlayActive) {
+      openSearchOverlay();
+    }
+  });
+  
+  closeBtn.addEventListener('click', closeSearchOverlay);
+  blurOverlay.addEventListener('click', closeSearchOverlay);
+  
+  // ESC key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOverlayActive) {
+      closeSearchOverlay();
+    }
+  });
+});
+</script>
+
+<script src="script.js"></script>
+
 </body>
 </html>
