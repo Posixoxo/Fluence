@@ -1,9 +1,9 @@
-//  COMPLETE MULTI-PLATFORM SCRIPT.JS - FINAL FIXED VERSION
+// ✅ COMPLETE MULTI-PLATFORM SCRIPT.JS - FINAL FIXED VERSION
 // Platforms: Spotify + YouTube + SoundCloud
 // Features: Tab switching without re-fetch, image badges, enhanced search
 
 document.addEventListener('DOMContentLoaded', () => {
-  // BACKEND URL
+  // ✅ BACKEND URL
   const BACKEND = '/.netlify/functions';
   const isBrowsePage = /browse\.html$/i.test(window.location.pathname) || /browse/i.test(window.location.pathname);
   
@@ -11,11 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('🌐 Environment:', window.location.hostname);
   console.log('📄 Is Browse Page:', isBrowsePage);
 
-  // PLATFORM SELECTION STATE
+  // ✅ PLATFORM SELECTION STATE
   let selectedPlatform = 'all'; // 'spotify', 'youtube', 'soundcloud', or 'all'
   window.selectedPlatform = selectedPlatform;
 
-  // CACHED SEARCH RESULTS (prevents re-fetching)
+  // ✅ CACHED SEARCH RESULTS (prevents re-fetching)
   let cachedSearchResults = {
     query: '',
     spotifyData: { tracks: [], playlists: [] },
@@ -23,7 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
     soundcloudData: []
   };
 
-  /* GLOBAL ERROR BOUNDARY */
+  /* -------------------------
+     GLOBAL ERROR BOUNDARY
+     ------------------------- */
   window.addEventListener('error', (event) => {
     console.error('🔴 Global Error:', event.error);
     showGlobalError('An unexpected error occurred. Please refresh the page.');
@@ -62,14 +64,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => errorBanner.remove(), 10000);
   }
 
-  /* IN-MEMORY STATE */
+  /* -------------------------
+     IN-MEMORY STATE
+     ------------------------- */
   const appState = {
     darkMode: false,
     selectedMood: null,
     rateLimitInfo: { remaining: 100, resetIn: null }
   };
 
-  /* LOADING STATE MANAGER  */
+  /* -------------------------
+     LOADING STATE MANAGER
+     ------------------------- */
   function showLoading(containerId, message = 'Loading...') {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -113,7 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  /* NAV / MOBILE MENU */
+  /* -------------------------
+     NAV / MOBILE MENU
+     ------------------------- */
   (function() {
     const container = document.getElementById('mobile-nav-container');
     const openBtn = document.getElementById('menu-open-btn');
@@ -145,7 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 
-  /* DARK MODE  */
+  /* -------------------------
+     DARK MODE
+     ------------------------- */
   const toggleButton = document.getElementById('dark-mode-toggle');
   const body = document.body;
   const localStorageKey = 'moodify-dark-mode';
@@ -183,7 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ARTIST ROTATION */
+  /* -------------------------
+     ARTIST ROTATION
+     ------------------------- */
   const allArtists = [
     { name: "Davido", image: "Images/David.jpg" },
     { name: "Asake", image: "Images/Asake.jpg" },
@@ -250,7 +262,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(rotateContent, ARTIST_ROTATION_INTERVAL_MS);
   }
 
-  /* LOCAL PLAYLISTS (fallback) */
+  /* -------------------------
+     LOCAL PLAYLISTS (fallback)
+     ------------------------- */
   const playlists = [
     { id: 1, title: "Sunday Chill", description: "Relax with soft vibes and mellow beats.", cover: "Images/covers/chill.jpg", tags: ["chill"], time: ["weekend"], energy: ["low"], spotify: "", apple: "", audiomack: "" },
     { id: 2, title: "Study Vibes", description: "Focus with lo-fi and instrumental beats.", cover: "Images/covers/study.jpg", tags: ["chill","study"], time: ["night","morning"], energy: ["low"], spotify: "", apple: "", audiomack: "" },
@@ -259,7 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
     { id: 5, title: "Heartbreak Slow", description: "Emotional slow-tempo songs.", cover: "Images/covers/heartbreak.jpg", tags: ["heartbreak"], time: ["night"], energy: ["low"], spotify: "", apple: "", audiomack: "" }
   ];
 
-  /* UTILITY FUNCTIONS */
+  /* -------------------------
+     UTILITY FUNCTIONS
+     ------------------------- */
   function isValidUrl(url) {
     if (!url) return false;
     try {
@@ -280,7 +296,9 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/'/g, '&#39;');
   }
 
-  /* ENHANCED showPlaylists with IMAGE BADGES (no audio controls) */
+  /* -------------------------
+     ✅ ENHANCED showPlaylists with IMAGE BADGES (no audio controls)
+     ------------------------- */
   function showPlaylists(list) {
     const container = document.getElementById('playlist-container');
     if (!container) return;
@@ -347,7 +365,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* MOOD HELPERS */
+  /* -------------------------
+     MOOD HELPERS
+     ------------------------- */
   function clearMoodClasses() {
     body.classList.remove('mood-happy','mood-chill','mood-workout','mood-heartbreak');
   }
@@ -365,7 +385,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setMoodBackground(found);
   }
 
-  /* MOOD MAPPING */
+  /* -------------------------
+     MOOD MAPPING
+     ------------------------- */
   const MOOD_KEYWORDS = {
     chill: ['chill', 'lo-fi', 'lofi', 'study', 'sleep', 'instrumental', 'jazz', 'classical', 'r & b', 'r&b', 'soul'],
     happy: ['happy', 'party', 'pop', 'afro', 'summer', 'dance'],
@@ -391,7 +413,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return 'happy';
   }
 
-  /* VISUALIZER & SOFT PULSE */
+  /* -------------------------
+     VISUALIZER & SOFT PULSE
+     ------------------------- */
   const visualizer = document.getElementById('visualizer');
   let visualizerTimeout = null;
   let bodyPulseTimeout = null;
@@ -427,7 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, duration + 200);
   }
 
-  /* SCROLL TO RESULTS (Browse page only) */
+  /* -------------------------
+     ✅ SCROLL TO RESULTS (Browse page only)
+     ------------------------- */
   function scrollToResults() {
     if (!isBrowsePage) return;
     
@@ -442,7 +468,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* ENHANCED FETCH WITH RETRY LOGIC  */
+  /* -------------------------
+     ENHANCED FETCH WITH RETRY LOGIC
+     ------------------------- */
   async function fetchWithRetry(url, options = {}, retries = 2) {
     for (let i = 0; i <= retries; i++) {
       try {
@@ -491,7 +519,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* SEARCH YOUTUBE (optimized query) */
+  /* -------------------------
+     ✅ SEARCH YOUTUBE (optimized query)
+     ------------------------- */
   async function searchYouTube(query, limit = 6) {
     try {
       // Optimize query for music playlists
@@ -519,7 +549,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* SEARCH SOUNDCLOUD (optimized query) */
+  /* -------------------------
+     ✅ SEARCH SOUNDCLOUD (optimized query)
+     ------------------------- */
   async function searchSoundCloud(query, limit = 6) {
     try {
       // Optimize query for music
@@ -544,7 +576,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* MULTI-PLATFORM SEARCH (OPTIMIZED - no re-fetch on tab switch) */
+  /* -------------------------
+     ✅ MULTI-PLATFORM SEARCH (OPTIMIZED - no re-fetch on tab switch)
+     ------------------------- */
   const searchResultsEl = document.getElementById('search-results') || document.querySelector('.search-results');
   const searchButton = document.getElementById('searchButton');
   const searchInput = document.getElementById('searchInput');
@@ -562,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return null;
   }
 
-  // OPTIMIZED: Searches only once, caches results
+  // ✅ OPTIMIZED: Searches only once, caches results
   async function searchSpotify(query) {
     const resultsContainer = searchResultsEl;
     if (!resultsContainer) {
@@ -617,7 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
         soundcloudResults = await searchSoundCloud(query, 6);
       }
 
-      // CACHE RESULTS
+      // ✅ CACHE RESULTS
       cachedSearchResults = {
         query: query,
         spotifyData: spotifyResults,
@@ -680,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let html = `<div class="results-inner" style="max-width:900px;margin:18px auto;">`;
 
-    // PLATFORM FILTER BUTTONS with IMAGES
+    // ✅ PLATFORM FILTER BUTTONS with IMAGES
     html += `
       <div class="platform-filters" style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:center;">
         <button class="platform-filter-btn ${platform === 'all' ? 'active' : ''}" onclick="window.selectPlatform('all')" style="display:flex;align-items:center;gap:8px;">
@@ -858,12 +892,12 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsContainer.innerHTML = html;
   }
 
-  //  OPTIMIZED: Tab switching without re-fetching
+  // ✅ OPTIMIZED: Tab switching without re-fetching
   window.selectPlatform = function(platform) {
     window.selectedPlatform = platform;
     console.log('Platform selected:', platform);
     
-    //  USE CACHED RESULTS - no API call!
+    // ✅ USE CACHED RESULTS - no API call!
     if (cachedSearchResults.query && searchInput && searchInput.value.trim() === cachedSearchResults.query) {
       console.log('🚀 Using cached results - no API call needed!');
       renderMultiPlatformResults(
@@ -878,7 +912,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  /* DEBOUNCED SEARCH INPUT */
+  /* -------------------------
+     DEBOUNCED SEARCH INPUT
+     ------------------------- */
   function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -911,7 +947,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* FETCH PLAYLIST (Multi-platform, optimized) - FIXED: Fetches ALL platforms */
+  /* -------------------------
+     ✅ FETCH PLAYLIST (Multi-platform, optimized) - FIXED: Fetches ALL platforms
+     ------------------------- */
   async function fetchSpotifyPlaylist(query, limit = 6) {
     const platform = window.selectedPlatform || 'all';
     
@@ -1017,10 +1055,10 @@ document.addEventListener('DOMContentLoaded', () => {
         );
       }
       
-      //  Wait for ALL platforms to finish
+      // ✅ Wait for ALL platforms to finish
       await Promise.all(promises);
       
-      //  Mix results from all platforms
+      // ✅ Mix results from all platforms
       const allResults = [
         ...spotifyResults,
         ...youtubeResults,
@@ -1041,7 +1079,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* PLAYLIST DISPLAY HANDLER */
+  /* -------------------------
+     PLAYLIST DISPLAY HANDLER
+     ------------------------- */
   const playlistContainerEl = document.getElementById('playlist-container');
 
   async function handlePlaylistDisplay(matches) {
@@ -1071,7 +1111,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /*  RANDOM VIBE BUTTON */
+  /* -------------------------
+     RANDOM VIBE BUTTON
+     ------------------------- */
   const randomBtnEl = document.getElementById('randomVibeBtn');
   const timeOptions = ['morning', 'afternoon', 'evening', 'night', 'weekend'];
   const energyOptions = ['low', 'medium', 'hype', 'high'];
@@ -1118,7 +1160,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* BUILD MY VIBE BUTTON */
+  /* -------------------------
+     BUILD MY VIBE BUTTON
+     ------------------------- */
   const buildBtnEl = document.getElementById('buildVibeBtn');
 
   if (buildBtnEl) {
@@ -1162,7 +1206,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* STORE MOOD BUTTON CLICK*/
+  /* -------------------------
+     STORE MOOD BUTTON CLICK
+     ------------------------- */
   document.querySelectorAll('.mood-button').forEach(button => {
     button.addEventListener('click', () => {
       const mood = button.getAttribute('data-mood');

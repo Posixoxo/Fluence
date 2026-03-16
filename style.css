@@ -320,6 +320,22 @@ main {
   margin: 45px auto 95px auto;
 }
 
+#search-blur-overlay {z-index: 99998;}
+.search-input-wrapper.overlay-active {z-index: 100000;}
+#search-results-overlay {z-index: 100000;}
+#close-search-btn {z-index: 100001;} 
+
+#close-search-btn {
+  display: flex;  /* ✅ Always flex */
+  opacity: 0;     /* ✅ Hidden by default */
+  pointer-events: none;
+}
+
+#close-search-btn.visible {
+  opacity: 1;     /* ✅ Show when needed */
+  pointer-events: auto;
+}
+
 .search-icon{
   position: absolute;
   right: 15px;

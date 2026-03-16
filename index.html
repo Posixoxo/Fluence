@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Young+Serif&display=swap" rel="stylesheet">
     
-    <!-- ✅ SEARCH OVERLAY STYLES -->
+    <!-- ✅ SEARCH OVERLAY STYLES - FIXED Z-INDEX -->
     <style>
       /* Blur background overlay */
       #search-blur-overlay {
@@ -25,7 +25,7 @@
         background: rgba(8, 25, 23, 0.95);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        z-index: 9998;
+        z-index: 99998; /* ✅ BELOW mobile nav (99999) */
         opacity: 0;
         transition: opacity 0.4s ease;
       }
@@ -38,7 +38,7 @@
       /* Animated search container */
       .search-input-wrapper {
         position: relative;
-        z-index: 9999;
+        z-index: 1;
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       }
       
@@ -49,7 +49,7 @@
         transform: translateX(-50%) !important;
         max-width: 600px !important;
         width: 90% !important;
-        z-index: 10000 !important;
+        z-index: 100000 !important; /* ✅ ABOVE mobile nav */
       }
       
       /* Results container for overlay */
@@ -63,7 +63,7 @@
         max-width: 900px;
         max-height: calc(100vh - 200px);
         overflow-y: auto;
-        z-index: 10000;
+        z-index: 100000; /* ✅ ABOVE mobile nav */
         padding-bottom: 40px;
       }
       
@@ -90,9 +90,8 @@
         background: rgba(255, 255, 255, 0.3);
       }
       
-      /* Close button */
+      /* ✅ FIXED: Close button CSS (removed duplicate display) */
       #close-search-btn {
-        display: none;
         position: fixed;
         top: 20px;
         right: 20px;
@@ -104,12 +103,19 @@
         color: white;
         font-size: 28px;
         cursor: pointer;
-        z-index: 10001;
+        z-index: 100001; /* ✅ ABOVE everything */
         transition: all 0.3s ease;
-        display: flex;
         align-items: center;
         justify-content: center;
         line-height: 1;
+        opacity: 0;
+        pointer-events: none;
+        display: flex; /* ✅ Always flex, control visibility with opacity */
+      }
+      
+      #close-search-btn.visible {
+        opacity: 1;
+        pointer-events: auto;
       }
       
       #close-search-btn:hover {
@@ -469,7 +475,7 @@ window.goToMyProfile = function() {
 };
 </script>
 
-<!-- ✅ SEARCH OVERLAY ANIMATION LOGIC -->
+<!-- ✅ SEARCH OVERLAY ANIMATION LOGIC - FIXED -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchInput');
@@ -490,7 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
     blurOverlay.classList.add('active');
     searchWrapper.classList.add('overlay-active');
     resultsOverlay.classList.add('active');
-    closeBtn.style.display = 'flex';
+    closeBtn.classList.add('visible'); // ✅ Use class instead of style.display
     searchInput.removeAttribute('readonly');
     searchInput.focus();
   }
@@ -504,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
     blurOverlay.classList.remove('active');
     searchWrapper.classList.remove('overlay-active');
     resultsOverlay.classList.remove('active');
-    closeBtn.style.display = 'none';
+    closeBtn.classList.remove('visible'); // ✅ Use class instead of style.display
   }
 
   // Event listeners
