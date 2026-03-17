@@ -1,4 +1,4 @@
-// auth.js 
+// auth.js - FIXED VERSION
 import { auth } from './firebase-config/firebase-config.js';
 import {
   createUserWithEmailAndPassword,
@@ -10,32 +10,29 @@ import {
   sendPasswordResetEmail,
   updateProfile
 } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { updateDynamicGreeting } from './greeting.js';
+import { getUserProfile } from './firebase-config/database.js';
 
 let currentUser = null;
 
 export function initAuth() {
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     currentUser = user;
     console.log('Auth state:', user ? `Logged in: ${user.email}` : 'Not logged in');
-    updateUI(user);
+    await updateUI(user);
   });
 }
 
-// ✅ UPDATED: Uses CSS classes instead of inline styles
-function updateUI(user) {
+// ✅ FIXED: Prioritizes dashboard photos over Google photos
+async function updateUI(user) {
   const authRequired = document.querySelectorAll('[data-auth-required]');
   const noAuth = document.querySelectorAll('[data-no-auth]');
 
   if (user) {
-    // Logged in - show auth-required elements
     authRequired.forEach(el => {
       el.classList.remove('hidden');
-      // Add visible class for playlist buttons to maintain flex layout
       if (el.classList.contains('playlist-btn')) {
         el.classList.add('visible');
       }
-      // Fallback for elements that don't have special classes
       if (!el.classList.contains('playlist-btn')) {
         el.style.display = 'block';
       }
@@ -51,7 +48,6 @@ function updateUI(user) {
       }
     });
   } else {
-    // Logged out - hide auth-required elements
     authRequired.forEach(el => {
       el.classList.add('hidden');
       if (el.classList.contains('playlist-btn')) {
@@ -59,8 +55,6 @@ function updateUI(user) {
       }
       if (!el.classList.contains('playlist-btn')) {
         el.style.display = 'none';
-
-        updateDynamicGreeting(null);
       }
     });
     
@@ -73,33 +67,46 @@ function updateUI(user) {
         el.style.display = 'block';
       }
     });
+
+    // Update greeting
+    if (typeof window.updateDynamicGreeting === 'function') {
+      window.updateDynamicGreeting(null);
+    }
   }
 
-  // Update user info displays
   if (user) {
-    // Name: displayName if exists, otherwise derive from email prefix
-    const displayName = user.displayName
-      ? user.displayName
-      : user.email.split('@')[0];
+    // ✅ FIX: Get user profile from database to check for manually uploaded photos
+    let userProfile = null;
+    try {
+      const profileResult = await getUserProfile(user.uid);
+      if (profileResult.success) {
+        userProfile = profileResult.data;
+      }
+    } catch (err) {
+      console.warn('Could not fetch user profile:', err);
+    }
 
-      updateDynamicGreeting(user);
+    // Priority: database > auth > email
+    const displayName = userProfile?.displayName 
+      || user.displayName
+      || user.email.split('@')[0];
 
-    // Email: ALWAYS user.email — never displayName
     const email = user.email;
 
     document.querySelectorAll('[data-user-name]').forEach(el => {
       el.textContent = displayName;
     });
 
-    // ✅ Shows the actual email address
     document.querySelectorAll('[data-user-email]').forEach(el => {
       el.textContent = email;
     });
 
-    // Photo: Google provides one, default to inline SVG
+    // ✅ FIX: Prioritize dashboard photo > Google photo > default
     document.querySelectorAll('[data-user-photo]').forEach(el => {
-      if (user.photoURL) {
-        el.src = user.photoURL;
+      const photoURL = userProfile?.photoURL || user.photoURL;
+      
+      if (photoURL) {
+        el.src = photoURL;
         el.onerror = () => {
           el.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23333" width="100" height="100"/%3E%3Ctext fill="%23ccc" font-size="40" x="50%25" y="50%25" text-anchor="middle" dy=".35em"%3E👤%3C/text%3E%3C/svg%3E';
         };
@@ -107,10 +114,13 @@ function updateUI(user) {
         el.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23333" width="100" height="100"/%3E%3Ctext fill="%23ccc" font-size="40" x="50%25" y="50%25" text-anchor="middle" dy=".35em"%3E👤%3C/text%3E%3C/svg%3E';
       }
     });
+
+    if (typeof window.updateDynamicGreeting === 'function') {
+      window.updateDynamicGreeting(user);
+    }
   }
 }
 
-// Sign Up
 export async function signUp(email, password, displayName) {
   try {
     const result = await createUserWithEmailAndPassword(auth, email, password);
@@ -125,7 +135,6 @@ export async function signUp(email, password, displayName) {
   }
 }
 
-// Sign In
 export async function signIn(email, password) {
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
@@ -137,7 +146,7 @@ export async function signIn(email, password) {
   }
 }
 
-// Google Sign In
+// ✅ FIXED: Better error handling for production
 const googleProvider = new GoogleAuthProvider();
 export async function signInWithGoogle() {
   try {
@@ -146,11 +155,21 @@ export async function signInWithGoogle() {
     return { success: true, user: result.user };
   } catch (error) {
     console.error('❌ Google sign in error:', error);
+    
+    if (error.code === 'auth/popup-blocked') {
+      return { success: false, error: 'Popup blocked. Please allow popups for this site.' };
+    }
+    if (error.code === 'auth/unauthorized-domain') {
+      return { success: false, error: 'This domain is not authorized. Please contact support.' };
+    }
+    if (error.code === 'auth/popup-closed-by-user') {
+      return { success: false, error: 'Sign-in cancelled.' };
+    }
+    
     return { success: false, error: getErrorMessage(error) };
   }
 }
 
-// Sign Out
 export async function signOutUser() {
   try {
     await signOut(auth);
@@ -161,7 +180,6 @@ export async function signOutUser() {
   }
 }
 
-// Password Reset
 export async function resetPassword(email) {
   try {
     await sendPasswordResetEmail(auth, email);
@@ -197,12 +215,13 @@ function getErrorMessage(error) {
     'auth/wrong-password': 'Incorrect password.',
     'auth/invalid-credential': 'Incorrect email or password.',
     'auth/popup-closed-by-user': 'Sign-in cancelled.',
+    'auth/popup-blocked': 'Popup blocked by browser.',
+    'auth/unauthorized-domain': 'Domain not authorized for Google sign-in.',
     'auth/too-many-requests': 'Too many attempts. Try again later.'
   };
   return messages[error.code] || error.message;
 }
 
-// Expose as globals for onclick handlers
 window.openAuthModal = openAuthModal;
 window.closeAuthModal = closeAuthModal;
 window.signOutUser = signOutUser;
