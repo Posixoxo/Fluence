@@ -1,8 +1,7 @@
 // auth-ui.js
-// ============================================================================
 // AUTHENTICATION UI HANDLER
-// Connects Firebase auth to your UI
-// ============================================================================
+// Connects Firebase auth to UI
+
 
 import { 
   initAuthListener, 
