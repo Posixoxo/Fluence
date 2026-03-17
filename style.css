@@ -320,19 +320,17 @@ main {
   margin: 45px auto 95px auto;
 }
 
-#search-blur-overlay {z-index: 99998;}
-.search-input-wrapper.overlay-active {z-index: 100000;}
-#search-results-overlay {z-index: 100000;}
-#close-search-btn {z-index: 100001;} 
-
 #close-search-btn {
-  display: flex;  /* ✅ Always flex */
-  opacity: 0;     /* ✅ Hidden by default */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 22px;  
+  opacity: 0;    
   pointer-events: none;
 }
 
 #close-search-btn.visible {
-  opacity: 1;     /* ✅ Show when needed */
+  opacity: 1;
   pointer-events: auto;
 }
 
