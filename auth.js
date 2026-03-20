@@ -1,4 +1,4 @@
-// auth.js - FIXED VERSION
+// auth.js - FINAL FIXED VERSION
 import { auth } from './firebase-config/firebase-config.js';
 import {
   createUserWithEmailAndPassword,
@@ -67,15 +67,10 @@ async function updateUI(user) {
         el.style.display = 'block';
       }
     });
-
-    // Update greeting
-    if (typeof window.updateDynamicGreeting === 'function') {
-      window.updateDynamicGreeting(null);
-    }
   }
 
   if (user) {
-    // ✅ FIX: Get user profile from database to check for manually uploaded photos
+    // ✅ Get user profile from database for manually uploaded photos
     let userProfile = null;
     try {
       const profileResult = await getUserProfile(user.uid);
@@ -101,7 +96,7 @@ async function updateUI(user) {
       el.textContent = email;
     });
 
-    // ✅ FIX: Prioritize dashboard photo > Google photo > default
+    // ✅ Prioritize dashboard photo > Google photo > default
     document.querySelectorAll('[data-user-photo]').forEach(el => {
       const photoURL = userProfile?.photoURL || user.photoURL;
       
@@ -114,10 +109,11 @@ async function updateUI(user) {
         el.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23333" width="100" height="100"/%3E%3Ctext fill="%23ccc" font-size="40" x="50%25" y="50%25" text-anchor="middle" dy=".35em"%3E👤%3C/text%3E%3C/svg%3E';
       }
     });
+  }
 
-    if (typeof window.updateDynamicGreeting === 'function') {
-      window.updateDynamicGreeting(user);
-    }
+  // ✅ Update greeting using global window function (not import)
+  if (typeof window.updateDynamicGreeting === 'function') {
+    window.updateDynamicGreeting(user);
   }
 }
 
@@ -146,7 +142,7 @@ export async function signIn(email, password) {
   }
 }
 
-// ✅ FIXED: Better error handling for production
+// ✅ Better error handling for production
 const googleProvider = new GoogleAuthProvider();
 export async function signInWithGoogle() {
   try {

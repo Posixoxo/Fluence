@@ -1,6 +1,7 @@
-// greeting.js
+// greeting.js - FINAL FIXED VERSION
+// Works both as module AND regular script
 
-export function updateDynamicGreeting(user) {
+function updateDynamicGreeting(user) {
     const greetingElement = document.getElementById('dynamic-greeting');
     if (!greetingElement) return; // Safety check
 
@@ -20,4 +21,21 @@ export function updateDynamicGreeting(user) {
         : "Guest";
 
     greetingElement.textContent = `${greetingBase}, ${name}`;
+}
+
+// ✅ Make it available globally (for regular script loading)
+window.updateDynamicGreeting = updateDynamicGreeting;
+
+// ✅ Export for module imports (for auth.js)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { updateDynamicGreeting };
+}
+
+// Auto-update on page load with "Guest"
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        updateDynamicGreeting(null);
+    });
+} else {
+    updateDynamicGreeting(null);
 }
