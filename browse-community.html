@@ -12,14 +12,14 @@
 
 <style>
     :root {
-      --c-bg: #081917;             /* Ink Black Base */
-      --c-surface: #0d2b27;        /* Deep Pine Surface */
-      --c-card: #0b2421;           /* Elevated Card */
-      --c-border: rgba(63, 178, 161, 0.2); /* Pine Border */
-      --c-accent: #fcb790;         /* Peach Glow */
-      --c-accent2: #3fb2a1;        /* Teal Accent */
-      --c-text: #f5f5f5;           /* Soft White */
-      --c-muted: #628a84;          /* Muted Pine */
+      --c-bg: #081917;
+      --c-surface: #0d2b27;
+      --c-card: #0b2421;
+      --c-border: rgba(63, 178, 161, 0.2);
+      --c-accent: #fcb790;
+      --c-accent2: #3fb2a1;
+      --c-text: #f5f5f5;
+      --c-muted: #628a84;
       --radius-sm: 10px;
       --radius-md: 16px;
       --radius-lg: 24px;
@@ -32,6 +32,51 @@
       background: var(--c-bg);
       color: var(--c-text);
       min-height: 100vh;
+    }
+
+    /* ✅ LOADING STATE */
+    .loading-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      gap: 20px;
+    }
+
+    .loading-dots {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .loading-dots .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--c-accent);
+      animation: wave 1.4s ease-in-out infinite;
+    }
+
+    .loading-dots .dot:nth-child(1) { animation-delay: 0s; }
+    .loading-dots .dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes wave {
+      0%, 60%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.6;
+      }
+      30% {
+        transform: translateY(-16px) scale(1.1);
+        opacity: 1;
+      }
+    }
+
+    .loading-text {
+      color: var(--c-muted);
+      font-size: 14px;
+      font-weight: 500;
     }
 
     /* ── NAV ── */
@@ -49,16 +94,6 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px); 
       z-index: 1000;
-    }
-
-    .c-logo {
-      font-family: 'Syne', sans-serif;
-      font-size: 22px;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--c-accent), var(--c-accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-decoration: none;
     }
 
     .c-nav-links {
@@ -210,7 +245,6 @@
       gap: 20px;
     }
 
-    /* ── PLAYLIST CARD ── */
     .pl-card {
       background: var(--c-card);
       border-radius: var(--radius-md);
@@ -430,12 +464,6 @@
       flex: 1;
     }
 
-    .modal-btn-secondary {
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      color: var(--c-text);
-    }
-
     .modal-btn-close {
       background: var(--c-surface);
       border: 1px solid var(--c-border);
@@ -469,7 +497,6 @@
     .modal-user-sub { font-size: 12px; color: var(--c-muted); }
     .modal-user-arrow { margin-left: auto; color: var(--c-muted); }
 
-    /* ── LOADING & EMPTY ── */
     .skeleton-card {
       background: var(--c-card);
       border-radius: 16px;
@@ -518,251 +545,12 @@
     }
 
     .c-empty svg { margin-bottom: 20px; opacity: 0.3; }
-    
-    /* Preview Modal */
-.preview-modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 14, 13, 0.95);
-  backdrop-filter: blur(12px);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
 
-.preview-modal-overlay.open { display: flex; }
-
-.preview-modal {
-  background: var(--dash-card);
-  border: 1px solid var(--dash-border);
-  border-radius: 24px;
-  width: 100%;
-  max-width: 600px;
-  max-height: 85vh;
-  overflow-y: auto;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.preview-modal-header {
-  padding: 24px 24px 16px;
-  border-bottom: 1px solid var(--dash-border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.preview-modal-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-}
-
-.preview-close-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--dash-input);
-  border: 1px solid var(--dash-border);
-  color: var(--dash-muted);
-  cursor: pointer;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.preview-close-btn:hover {
-  background: var(--dash-card);
-  color: var(--dash-text);
-}
-
-.preview-modal-body { padding: 24px; }
-
-.preview-cover-section {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 24px;
-  align-items: flex-start;
-}
-
-.preview-cover {
-  width: 180px;
-  height: 180px;
-  border-radius: 12px;
-  object-fit: cover;
-  background: var(--dash-input);
-  flex-shrink: 0;
-}
-
-.preview-info { flex: 1; min-width: 0; }
-
-.preview-platform {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--dash-accent);
-  background: rgba(252, 183, 144, 0.15);
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin-bottom: 12px;
-}
-
-.preview-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-.preview-desc {
-  color: var(--dash-muted);
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.preview-tracks-section {
-  margin-bottom: 24px;
-}
-
-.preview-section-title {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--dash-muted);
-  margin-bottom: 12px;
-}
-
-.preview-track-list {
-  background: var(--dash-input);
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--dash-border);
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.preview-track-item {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--dash-border);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.preview-track-item:last-child { border-bottom: none; }
-
-.preview-track-num {
-  font-size: 12px;
-  color: var(--dash-muted);
-  min-width: 20px;
-}
-
-.preview-track-info { flex: 1; min-width: 0; }
-
-.preview-track-name {
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.preview-track-artist {
-  font-size: 12px;
-  color: var(--dash-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.preview-track-duration {
-  font-size: 12px;
-  color: var(--dash-muted);
-}
-
-.preview-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.preview-btn {
-  flex: 1;
-  padding: 14px;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
-}
-
-.preview-btn-primary {
-  background: linear-gradient(135deg, var(--dash-accent), var(--dash-accent2));
-  color: var(--dash-bg);
-}
-
-.preview-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(252, 183, 144, 0.3);
-}
-
-.preview-btn-secondary {
-  background: var(--dash-input);
-  border: 1px solid var(--dash-border);
-  color: var(--dash-text);
-}
-
-.preview-loading {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--dash-muted);
-}
-
-.preview-error {
-  background: rgba(255, 82, 82, 0.1);
-  border: 1px solid rgba(255, 82, 82, 0.3);
-  border-radius: 12px;
-  padding: 16px;
-  color: #ff8888;
-  font-size: 14px;
-  margin-bottom: 16px;
-}
-
-    .pl-platform-display { 
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .pl-platform-display img {
-        display: block;
-        object-fit: contain;
-        width: 10px;
-        height: 10px;
-    }
-
-  .pl-platform-icon {
+    .pl-platform-icon {
       width: 20px !important;
       height: 20px !important;
       object-fit: contain;
-      position: absolute;
-      right: 5px;
-      top: 95%;
-      transform: translateY(-50%);
-      pointer-events: none; 
-  }
+    }
 
     @media (max-width: 768px) {
       .c-nav { padding: 16px; }
@@ -774,7 +562,19 @@
 </head>
 <body>
 
-  <!-- Auth Gate (shows when not logged in) -->
+<!-- ✅ LOADING STATE (shown first) -->
+<div id="loading-state" style="display: block;">
+  <div class="loading-center">
+    <div class="loading-dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <p class="loading-text">Loading community...</p>
+  </div>
+</div>
+
+<!-- ✅ AUTH GATE (hidden by default) -->
 <div id="community-auth-gate" style="display: none; position: fixed; inset: 0; background: var(--c-bg); z-index: 10000; align-items: center; justify-content: center; padding: 24px;">
   <div style="text-align: center; max-width: 480px;">
     <div style="font-size: 64px; margin-bottom: 24px;">🔐</div>
@@ -797,11 +597,14 @@
   </div>
 </div>
 
+<!-- ✅ MAIN CONTENT (hidden by default) -->
+<div id="community-content" style="display: none;">
+
 <nav class="c-nav">
   <div class="c-nav-links">
     <a href="index.html" class="c-nav-link"><img src="Images/Home.png" alt="home"><p>Home</p></a>
     <a href="browse-community.html" class="c-nav-link active"><img src="Images/Explore.png" alt="explore"><p>Explore</p></a>
-    <a href="dashboard.html" class="c-nav-link" id="dash-link"><img src="Images/Dashboard.png" alt="dashboard"><p>Dashboard</p></a>
+    <a href="dashboard.html" class="c-nav-link"><img src="Images/Dashboard.png" alt="dashboard"><p>Dashboard</p></a>
     <a href="Browse.html" class="c-nav-link"><img src="Images/search-visual.png" alt="search"><p>Find Vibes</p></a>
   </div>
 </nav>
@@ -809,10 +612,9 @@
 <div class="c-hero">
   <p class="c-hero-eyebrow">Community</p>
   <h1>Playlists from<br><span>real people</span></h1>
-  <p>Discover what other Moodify users are listening to. Every genre, every vibe.</p>
+  <p>Discover what other Fluence users are listening to. Every genre, every vibe.</p>
 </div>
 
-<!-- FILTERS -->
 <div class="c-filters">
   <span class="filter-label">Genre</span>
   <button class="filter-chip active" data-genre="all" onclick="applyFilter('all')">All</button>
@@ -831,22 +633,13 @@
   </select>
 </div>
 
-<!-- GRID -->
 <div class="c-grid-wrap">
-  <div class="c-grid" id="community-grid">
-    <!-- Skeleton loaders -->
-    ${Array(8).fill(`
-    <div class="skeleton-card">
-      <div class="skeleton-cover"></div>
-      <div class="skeleton-body">
-        <div class="skeleton-line"></div>
-        <div class="skeleton-line short"></div>
-      </div>
-    </div>`).join('')}
-  </div>
+  <div class="c-grid" id="community-grid"></div>
 </div>
 
-<!-- PLAYLIST DETAIL MODAL -->
+</div>
+
+<!-- MODAL -->
 <div class="pl-modal-overlay" id="pl-modal-overlay" onclick="closeModal(event)">
   <div class="pl-modal" id="pl-modal">
     <div id="modal-cover-area"></div>
@@ -862,7 +655,7 @@
         <button class="modal-btn modal-btn-close" onclick="closePLModal()">✕</button>
       </div>
       <div class="pl-modal-user" id="modal-user-row" onclick="goToUserProfile()">
-        <img class="modal-user-avatar" id="modal-user-avatar" src="Images/default-avatar.png" alt="">
+        <img class="modal-user-avatar" id="modal-user-avatar" src="" alt="">
         <div>
           <div class="modal-user-name" id="modal-user-name">—</div>
           <div class="modal-user-sub">View profile →</div>
@@ -872,29 +665,13 @@
   </div>
 </div>
 
-<!-- Preview Modal -->
-<div class="preview-modal-overlay" id="preview-modal-overlay">
-  <div class="preview-modal">
-    <div class="preview-modal-header">
-      <h3 class="preview-modal-title">Playlist Preview</h3>
-      <button class="preview-close-btn" onclick="closePreviewModal()">✕</button>
-    </div>
-    <div class="preview-modal-body" id="preview-modal-content">
-      <div class="preview-loading">
-        <div class="spinner"></div>
-        <p style="margin-top: 12px;">Loading preview...</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
 <div id="auth-modal-container"></div>
 
 <script type="module">
 import { auth } from './firebase-config/firebase-config.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getCommunityPlaylists, getUserProfile, recordPlay } from './firebase-config/database.js';
+import { signInWithGoogle } from './auth.js';
 
 const PLATFORM_ICONS = {
   spotify: `<img src="https://cdn.simpleicons.org/spotify/1DB954" class="pl-platform-icon" alt="Spotify">`,
@@ -911,144 +688,70 @@ let activePlaylist = null;
 let activeUserId = null;
 let currentUser = null;
 
-// ✅ CRITICAL FIX: Hide content IMMEDIATELY (before auth check)
+const loadingState = document.getElementById('loading-state');
 const authGate = document.getElementById('community-auth-gate');
-const hero = document.querySelector('.c-hero');
-const filters = document.querySelector('.c-filters');
-const gridWrap = document.querySelector('.c-grid-wrap');
-const dashLink = document.getElementById('dash-link');
+const content = document.getElementById('community-content');
 
-// Default: Hide everything, show auth gate
-if (authGate) authGate.style.display = 'flex';
-if (hero) hero.style.display = 'none';
-if (filters) filters.style.display = 'none';
-if (gridWrap) gridWrap.style.display = 'none';
-
-// ✅ Load auth modal HTML
-console.log('📥 Loading auth modal...');
+// ✅ Load auth modal
 fetch('auth-modal.html')
   .then(r => r.text())
   .then(html => { 
-    const container = document.getElementById('auth-modal-container');
-    if (container) {
-      container.innerHTML = html;
-      console.log('✅ Auth modal HTML loaded');
-      setTimeout(attachAuthGateListeners, 100);
-    }
+    document.getElementById('auth-modal-container').innerHTML = html;
+    setTimeout(attachAuthHandlers, 200);
   })
   .catch(err => console.error('❌ Auth modal load failed:', err));
 
-// ✅ Attach listeners to auth gate buttons
-function attachAuthGateListeners() {
+// ✅ Attach auth gate button handlers
+function attachAuthHandlers() {
   const signinBtn = document.getElementById('auth-gate-signin-btn');
   const signupBtn = document.getElementById('auth-gate-signup-btn');
   
   if (signinBtn) {
     signinBtn.addEventListener('click', () => {
-      console.log('🔑 Sign in clicked');
-      
-      let attempts = 0;
-      const tryOpen = setInterval(() => {
-        if (typeof window.openAuthModal === 'function') {
-          clearInterval(tryOpen);
-          window.openAuthModal('signin');
-          console.log('✅ Modal opened via auth.js');
-        } else if (attempts++ > 30) {
-          clearInterval(tryOpen);
-          console.error('❌ openAuthModal never loaded');
-          alert('Please refresh the page and try again');
-        }
-      }, 100);
+      if (typeof window.openAuthModal === 'function') {
+        window.openAuthModal('signin');
+      } else {
+        alert('Please refresh the page');
+      }
     });
-    console.log('✅ Sign in listener attached');
   }
   
   if (signupBtn) {
     signupBtn.addEventListener('click', () => {
-      console.log('🔑 Sign up clicked');
-      
-      let attempts = 0;
-      const tryOpen = setInterval(() => {
-        if (typeof window.openAuthModal === 'function') {
-          clearInterval(tryOpen);
-          window.openAuthModal('signup');
-          console.log('✅ Modal opened via auth.js');
-        } else if (attempts++ > 30) {
-          clearInterval(tryOpen);
-          console.error('❌ openAuthModal never loaded');
-          alert('Please refresh the page and try again');
-        }
-      }, 100);
+      if (typeof window.openAuthModal === 'function') {
+        window.openAuthModal('signup');
+      } else {
+        alert('Please refresh the page');
+      }
     });
-    console.log('✅ Sign up listener attached');
   }
 }
 
-// ✅ EMERGENCY FALLBACK: Create openAuthModal if auth.js fails
-setTimeout(() => {
-  if (typeof window.openAuthModal !== 'function') {
-    console.warn('⚠️ openAuthModal not defined - creating fallback');
-    
-    window.openAuthModal = function(tab = 'signin') {
-      console.log('🆘 Using fallback openAuthModal for tab:', tab);
-      const modal = document.getElementById('auth-modal');
-      
-      if (!modal) {
-        console.error('❌ Auth modal not found');
-        alert('Auth modal not loaded. Please refresh.');
-        return;
-      }
-      
-      modal.style.display = 'flex';
-      
-      document.querySelectorAll('.auth-form').forEach(f => {
-        if (f) f.style.display = 'none';
-      });
-      
-      const form = document.getElementById(`${tab}-form`);
-      if (form) form.style.display = 'block';
-      
-      document.querySelectorAll('.auth-tab').forEach(t => {
-        if (t) t.classList.toggle('active', t.dataset.tab === tab);
-      });
-      
-      document.querySelectorAll('.auth-error, .auth-success').forEach(e => {
-        if (e) e.style.display = 'none';
-      });
-      
-      console.log('✅ Modal opened (fallback)');
-    };
-    
-    window.closeAuthModal = function() {
-      const modal = document.getElementById('auth-modal');
-      if (modal) modal.style.display = 'none';
-    };
-    
-    console.log('✅ Fallback functions created');
-  } else {
-    console.log('✅ openAuthModal already defined by auth.js');
+// ✅ Make handleGoogleSignIn global for auth modal
+window.handleGoogleSignIn = async () => {
+  const result = await signInWithGoogle();
+  if (result.success && typeof window.closeAuthModal === 'function') {
+    window.closeAuthModal();
+  } else if (!result.success) {
+    alert(result.error);
   }
-}, 3000);
+};
 
-// ✅ Auth state handler - ONLY reveals content if logged in
-onAuthStateChanged(auth, (user) => {
-  console.log('🔐 Auth state:', user ? user.email : 'Not logged in');
-
+// ✅ Auth state handler - NO FLASHING
+onAuthStateChanged(auth, async (user) => {
+  // Hide loading
+  if (loadingState) loadingState.style.display = 'none';
+  
   if (!user) {
-    // Not logged in - content stays hidden (already hidden above)
-    console.log('🚫 Not logged in - showing auth gate');
+    // Not logged in
+    if (authGate) authGate.style.display = 'flex';
+    if (content) content.style.display = 'none';
   } else {
-    // Logged in - reveal content
-    console.log('✅ Logged in - showing content');
+    // Logged in
     currentUser = user;
-    
     if (authGate) authGate.style.display = 'none';
-    if (hero) hero.style.display = 'block';
-    if (filters) filters.style.display = 'flex';
-    if (gridWrap) gridWrap.style.display = 'block';
-    if (dashLink) dashLink.style.display = 'flex';
-    
-    loadCommunity();
+    if (content) content.style.display = 'block';
+    await loadCommunity();
   }
 });
 
@@ -1164,13 +867,9 @@ window.openPlaylist = async (playlistId) => {
       : `<div class="pl-modal-cover-placeholder">${PLATFORM_ICONS[pl.platform] || '🔗'}</div>`;
   }
 
-  const genreEl = document.getElementById('modal-genre');
-  const titleEl = document.getElementById('modal-title');
-  const descEl = document.getElementById('modal-desc');
-  
-  if (genreEl) genreEl.textContent = pl.genre || '';
-  if (titleEl) titleEl.textContent = pl.title;
-  if (descEl) descEl.textContent = pl.description || '';
+  document.getElementById('modal-genre').textContent = pl.genre || '';
+  document.getElementById('modal-title').textContent = pl.title;
+  document.getElementById('modal-desc').textContent = pl.description || '';
 
   const embedEl = document.getElementById('modal-embed');
   if (embedEl) {
@@ -1184,29 +883,20 @@ window.openPlaylist = async (playlistId) => {
 
   const user = pl._user;
   if (user) {
-    const avatarEl = document.getElementById('modal-user-avatar');
-    const nameEl = document.getElementById('modal-user-name');
-    
-    if (avatarEl) avatarEl.src = user.photoURL || defaultAvatar;
-    if (nameEl) nameEl.textContent = user.displayName || user.email || 'Anonymous';
+    document.getElementById('modal-user-avatar').src = user.photoURL || defaultAvatar;
+    document.getElementById('modal-user-name').textContent = user.displayName || user.email || 'Anonymous';
   }
 
-  const overlay = document.getElementById('pl-modal-overlay');
-  if (overlay) {
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
+  document.getElementById('pl-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 
   recordPlay(playlistId, null);
 };
 
 window.closePLModal = () => {
-  const overlay = document.getElementById('pl-modal-overlay');
-  if (overlay) overlay.classList.remove('open');
+  document.getElementById('pl-modal-overlay').classList.remove('open');
   document.body.style.overflow = '';
-  
-  const embedEl = document.getElementById('modal-embed');
-  if (embedEl) embedEl.innerHTML = '';
+  document.getElementById('modal-embed').innerHTML = '';
 };
 
 window.closeModal = (e) => {
