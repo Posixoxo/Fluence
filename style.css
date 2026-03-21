@@ -116,6 +116,7 @@ body.nav-open {
     width: 18px;
     height: 18px;
     border-radius: 50%;
+    color: var(--text-primary);
     border: 2px solid var(--bg-secondary);
     margin-left: auto;
     display: flex;
@@ -124,21 +125,12 @@ body.nav-open {
     background: transparent;
     cursor: pointer;
     transition: all 0.3s ease;
-    padding: 0;
+    padding: 10px;
 }
 
 .theme-toggle:hover {
   background-color: var(--bg-secondary);
   transform: rotate(20deg);
-}
-
-.theme-toggle:hover svg {
-  color: var(--surface);
-}
-
-.theme-toggle svg {
-  color: var(--text-primary);
-  transition: all 0.3s ease;
 }
 
 .sun-icon {
@@ -593,7 +585,7 @@ main {
 
 .artist-grid-container {
     display: flex;
-    flex-wrap: wrap; /* Allows buttons to wrap to the next line */
+    flex-wrap: wrap; 
     justify-content: center; 
     gap: 15px; 
     max-width: 700px;
@@ -601,10 +593,9 @@ main {
 }
 
 .artist-button {
-    flex: 1 1 45%; /* Shorthand for flex-grow, flex-shrink, flex-basis */
+    flex: 1 1 45%; 
     max-width: 180px; 
     height: 150px; 
-    
     border-left: 1px solid rgba(128, 128, 128, 0.08);
     border-top: 1px solid rgba(128, 128, 128, 0.08);
     border-right: none;
@@ -614,9 +605,9 @@ main {
     -webkit-backdrop-filter: blur(20px);
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
-    /* Ensure the button content stays centered and readable */
     position: relative; 
     z-index: 1; 
+    overflow: hidden; 
 }
 
 .artist-button:hover {
@@ -639,11 +630,28 @@ main {
     object-fit: cover;
 }
 
-.butt-img p{
+.butt-img p {
     font-size: 10px;
     margin: 0;
     font-family: "Caprasimo", serif;
     color: var(--accent-secondary); 
+}
+
+/* Smooth staggered slide and fade in */
+.fade-in {
+    opacity: 0;
+    animation: slideFadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes slideFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* THE ROTATING COLOR LAYER (::before) */

@@ -154,10 +154,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const isLightMode = isLightModeString === 'true';
     if (isLightMode) {
       body.classList.add('light-mode');
-      if (toggleButton) toggleButton.textContent = '🌙';
+      if (toggleButton) toggleButton.textContent = '☾';
     } else {
       body.classList.remove('light-mode');
-      if (toggleButton) toggleButton.textContent = '☀️';
+      if (toggleButton) toggleButton.textContent = '☼';
     }
     appState.darkMode = !isLightMode;
   };
@@ -178,13 +178,20 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {
         console.log('localStorage not available');
       }
-      toggleButton.textContent = isLightMode ? '🌙' : '☀️';
+      toggleButton.textContent = isLightMode ? '☾' : '☼';
       appState.darkMode = !isLightMode;
     });
   }
 
-  /* ARTIST ROTATION */
-  const allArtists = [
+
+/**
+ * ARTIST GRID SYSTEM
+ * Handles: Spotify API, Local Fallbacks, Randomization, and Auto-Rotation
+ */
+const artistState = {
+    artists: [],
+    // Local images here. The app will use these if Spotify is offline.
+    localFallbacks: [
     { name: "Davido", image: "Images/David.jpg" },
     { name: "Asake", image: "Images/Asake.jpg" },
     { name: "Burna Boy", image: "Images/Burna.jpg" },
@@ -219,36 +226,72 @@ document.addEventListener('DOMContentLoaded', () => {
     { name: "The Rolling Stones", image: "Images/The Rolling Stones.jpg" },
     { name: "The Weeknd", image: "Images/The Weekend.jpg" },
     { name: "Tycho", image: "Images/Tychomusic.jpg" },
-  ];
+        // Add as many as you have...
+    ],
+    currentIndex: 0,
+    visibleCount: 4,
+    interval: 10000
+};
+
+// 1. Fetch data from Netlify Function
+async function fetchArtists() {
+    try {
+        const response = await fetch('/.netlify/functions/get-spotify-data');
+        if (!response.ok) throw new Error("API Offline");
+
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            // SUCCESS: Use Spotify Data
+            artistState.artists = data.sort(() => Math.random() - 0.5);
+            console.log("✅ Using Live Spotify Data");
+        } else {
+            throw new Error("Empty Data");
+        }
+    } catch (err) {
+        // FAIL: Use Local Images
+        console.warn("⚠️ Using Local Fallback Images:", err.message);
+        artistState.artists = artistState.localFallbacks.sort(() => Math.random() - 0.5);
+    }
+    renderArtistGrid();
+}
+
+// 2. Render the grid to HTML
+function renderArtistGrid() {
+    const container = document.getElementById('artist-grid');
+    if (!container || artistState.artists.length === 0) return;
+
+    const displayList = [];
+    for (let i = 0; i < artistState.visibleCount; i++) {
+        const idx = (artistState.currentIndex + i) % artistState.artists.length;
+        displayList.push(artistState.artists[idx]);
+    }
+
+    container.innerHTML = displayList.map((artist, i) => `
+        <button class="artist-button fade-in" style="animation-delay: ${i * 0.1}s">
+            <div class="butt-img">
+                <img src="${artist.image}" alt="${artist.name}" class="img-1" 
+                     onerror="this.src='Images/default-artist.png'; this.onerror=null;">
+                <p>${artist.name}</p>
+            </div>
+        </button>
+    `).join('');
+}
+
+// 3. Rotation Logic
+function rotateArtists() {
+    if (artistState.artists.length > 0) {
+        artistState.currentIndex = (artistState.currentIndex + 1) % artistState.artists.length;
+        renderArtistGrid();
+    }
+}
+
+// 4. Initialize
+(function init() {
+    fetchArtists();
+    setInterval(rotateArtists, artistState.interval);
+})();
   
-  const artistButtons = document.querySelectorAll('.artist-button');
-  let currentIndex = 0;
-  const ARTIST_ROTATION_INTERVAL_MS = 10000;
-  
-  const rotateContent = () => {
-    artistButtons.forEach((button, buttonIndex) => {
-      const artistIndex = (currentIndex + buttonIndex) % allArtists.length;
-      const currentArtist = allArtists[artistIndex];
-      const img = button.querySelector('.img-1');
-      const p = button.querySelector('p');
-      
-      if (img) { 
-        img.src = currentArtist.image; 
-        img.alt = currentArtist.name;
-        img.onerror = () => {
-          img.src = 'Images/default-artist.png';
-          console.warn(`Failed to load image for ${currentArtist.name}`);
-        };
-      }
-      if (p) p.textContent = currentArtist.name;
-    });
-    currentIndex = (currentIndex + 1) % allArtists.length;
-  };
-  
-  if (artistButtons && artistButtons.length) {
-    rotateContent();
-    setInterval(rotateContent, ARTIST_ROTATION_INTERVAL_MS);
-  }
 
   /* LOCAL PLAYLISTS (fallback) */
   const playlists = [
