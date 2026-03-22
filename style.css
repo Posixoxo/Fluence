@@ -79,37 +79,21 @@ body.nav-open {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 30px;
-    padding: 10px 0;
+    margin: 20px 30px;
 }
 
 .logo-t{
-  width: 120px;
+  width: 60px;
+  margin: auto;
   height: auto;
   display: block;
   max-width: 100%;
-  padding: 0;
 }
 
-.nbar h1{
-    font-family: "Caprasimo", serif;
-    font-size: 20px;
-    letter-spacing: 2px; 
-    background: linear-gradient(90deg, #FFD700 0%, #004643 50%, #FFD700 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-}
-
-.nbar h1:hover {
+.logo-t:hover {
     cursor: pointer; 
     transform: scale(1.02);
     transition: transform 0.3s ease-in-out;
-}
-
-.logo-t{
-    text-decoration: none;
 }
 
 .theme-toggle {
