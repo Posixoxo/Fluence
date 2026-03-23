@@ -145,43 +145,61 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 
-  /* DARK MODE */
-  const toggleButton = document.getElementById('dark-mode-toggle');
-  const body = document.body;
-  const localStorageKey = 'moodify-dark-mode';
+/* DARK MODE */
+const toggleButton = document.getElementById('dark-mode-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const body = document.body;
+const localStorageKey = 'moodify-dark-mode';
+
+// Define your paths here for easy maintenance
+const moonIcon = 'Images/moon-icon.png';
+const sunIcon = 'Images/sun-icon.png';
+
+const applyTheme = (isLightModeString) => {
+  const isLightMode = isLightModeString === 'true';
   
-  const applyTheme = (isLightModeString) => {
-    const isLightMode = isLightModeString === 'true';
-    if (isLightMode) {
-      body.classList.add('light-mode');
-      if (toggleButton) toggleButton.textContent = '☾';
-    } else {
-      body.classList.remove('light-mode');
-      if (toggleButton) toggleButton.textContent = '☼';
-    }
+  if (isLightMode) {
+    body.classList.add('light-mode');
+    if (themeIcon) themeIcon.src = moonIcon;
+  } else {
+    body.classList.remove('light-mode');
+    if (themeIcon) themeIcon.src = sunIcon;
+  }
+  
+  if (typeof appState !== 'undefined') {
     appState.darkMode = !isLightMode;
-  };
-  
-  try {
-    const savedTheme = localStorage.getItem(localStorageKey);
-    if (savedTheme !== null) applyTheme(savedTheme);
-  } catch (e) {
-    console.log('localStorage not available, using session state');
   }
-  
-  if (toggleButton) {
-    toggleButton.addEventListener('click', () => {
-      body.classList.toggle('light-mode');
-      const isLightMode = body.classList.contains('light-mode');
-      try {
-        localStorage.setItem(localStorageKey, isLightMode);
-      } catch (e) {
-        console.log('localStorage not available');
-      }
-      toggleButton.textContent = isLightMode ? '☾' : '☼';
+};
+
+// Initial Load
+try {
+  const savedTheme = localStorage.getItem(localStorageKey);
+  if (savedTheme !== null) {
+    applyTheme(savedTheme);
+  }
+} catch (e) {
+  console.log('localStorage not available');
+}
+
+if (toggleButton && themeIcon) {
+  toggleButton.addEventListener('click', () => {
+    body.classList.toggle('light-mode');
+    const isLightMode = body.classList.contains('light-mode');
+    
+    try {
+      localStorage.setItem(localStorageKey, isLightMode);
+    } catch (e) {
+      console.log('localStorage error');
+    }
+
+    // Update the image source based on the new mode
+    themeIcon.src = isLightMode ? moonIcon : sunIcon;
+    
+    if (typeof appState !== 'undefined') {
       appState.darkMode = !isLightMode;
-    });
-  }
+    }
+  });
+}
 
 
 /**

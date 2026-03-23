@@ -110,11 +110,21 @@ body.nav-open {
     cursor: pointer;
     transition: all 0.3s ease;
     padding: 10px;
+    transition: opacity 0.2s ease;
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
 }
 
 .theme-toggle:hover {
   background-color: var(--bg-secondary);
   transform: rotate(20deg);
+}
+
+#theme-icon {
+  display: block;
+  object-fit: contain;
 }
 
 .sun-icon {
@@ -813,12 +823,16 @@ main {
 /* Playlist app styles (cards, controls) */
 .playlist-controls { max-width: 1000px; margin: 20px auto; padding: 0 18px; text-align: center; }
 .playlist-controls h2{
-    margin: 50px 0 30px 0; 
-    font-family: "Caprasimo", serif;
-    letter-spacing: 2px;}
+    margin: 50px 0 30px 0;
+    font-family: serif;
+    letter-spacing: 2px; 
+    background: var(--text-primary);        
+    -webkit-background-clip: text;
+    background-clip: text;   
+    -webkit-text-fill-color: transparent;
+  }
 
 /* VIBE BUILDER  */
-
 .vibe-builder {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1093,26 +1107,28 @@ body.mood-heartbreak #visualizer span { background: #ff6a88; }
 
 
 /* footer styles */
-hr{
-    border: none;
-    border-top: 1px solid #004643;
-    margin: 40px 0;
+footer{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    margin: 80px 0 0 0;
+    padding: 0 10px;
+    font-size: 16px;
+    font-family: serif;
+    letter-spacing: 3px; 
+    background: var(--bg-primary);
+    border-top: 0.5px solid var(--accent-primary);        
 }
 
-footer{
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    color: #b8b7b4;
-    font-size: 17px;
-    font-family: serif;
-    letter-spacing: 2px; 
-    background: linear-gradient(90deg, #FFD700 0%, #004643 50%, #FFD700 100%);        
-    -webkit-background-clip: text;
-    background-clip: text;   
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-}
+  .logo-f{
+    display: block;
+    width: 80px;
+    height: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
 
 /* browse.html playlist styles*/
 .loading {
@@ -1168,15 +1184,14 @@ footer{
 
 .container h2{
     padding: 20px 30px;
+    margin: 20px 0;
     text-align: center;
-    color: #b8b7b4;
     font-size: 18px;
     font-family: serif;
     letter-spacing: 2px; 
-    background: linear-gradient(90deg, #FFD700 0%, #004643 50%, #FFD700 100%);        
+    background: var(--text-primary);        
     -webkit-background-clip: text;
     background-clip: text;   
-    color: transparent;
     -webkit-text-fill-color: transparent;
 }
 
