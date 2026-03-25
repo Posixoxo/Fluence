@@ -107,18 +107,19 @@
       margin: 0 auto;
     }
 
-    .dash-nav-link img {
-      display: block;
-      width: 20px;
-      height: auto;
-      max-width: 100%;
-    }
+   .dash-nav-link .nav-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    transition: filter 0.3s ease;
+    stroke: var(--dash-text);
+  }
 
     .dash-nav-link p{
-      font-size: 11px;
-      font-family: "Caprasimo", serif;
-      color: var(--text-primary);
-      letter-spacing: 2px;
+      font-size: 10px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--dash-text);
+      font-weight: 900;
     }
 
     .dash-nav-link {
@@ -135,12 +136,13 @@
       transition: color 0.2s;
     }
 
-    .dash-nav-link:hover { color: var(--dash-text); }
-    .dash-nav-link.active { color: var(--dash-accent); }
+    .dash-nav-link:hover .nav-icon{ stroke: var(--dash-accent2); }
+    .dash-nav-link.active .nav-icon{ stroke: var(--dash-accent); }
+    .dash-nav-link.active p{color: var(--dash-accent); }
 
     .dash-nav-btn {
       padding: 8px 20px;
-      background: linear-gradient(135deg, var(--dash-accent), var(--dash-accent2));
+      background: var(--dash-accent2);
       border: none;
       border-radius: 20px;
       color: #081917;
@@ -844,10 +846,28 @@
 <!-- NAV -->
 <nav class="dash-nav">
   <div class="dash-nav-links">
-    <a href="index.html" class="dash-nav-link"><img src="Images/Home.png" alt="home"><p>Home</p></a>
-    <a href="browse-community.html" class="dash-nav-link"><img src="Images/Explore.png" alt="explore"><p>Explore</p></a>
-    <a href="dashboard.html" class="dash-nav-link active"><img src="Images/Dashboard.png" alt="dashboard"><p>Dashboard</p></a>
-    <a href="Browse.html" class="dash-nav-link"><img src="Images/search-visual.png" alt="search"><p>Find Vibes</p></a>
+    <a href="index.html" class="dash-nav-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <p>Home</p></a>
+    <a href="browse-community.html" class="dash-nav-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                    </svg>
+                    <p>Explore</p></a>
+    <a href="dashboard.html" class="dash-nav-link active"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <rect width="7" height="9" x="3" y="3" rx="1"></rect>
+                      <rect width="7" height="5" x="14" y="3" rx="1"></rect>
+                      <rect width="7" height="9" x="14" y="12" rx="1"></rect>
+                      <rect width="7" height="5" x="3" y="16" rx="1"></rect>
+                    </svg>
+                    <p>Dashboard</p></a>
+    <a href="Browse.html" class="dash-nav-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <p>Find Vibes</p></a>
   </div>
 </nav>
 

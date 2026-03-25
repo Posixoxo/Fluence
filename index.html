@@ -34,14 +34,42 @@
         <div id="mobile-nav-container">
             <div id="mobile-nav">
                 <img src="Images/icon-close.svg" alt="close menu" id="menu-close-btn">
-                <a href="index.html" class="playlist-btn sight move"><img src="Images/Home.png" alt="home"><p>Home</p></a>
-                <a href="Addyourplaylist.html" class="playlist-btn sight"><img src="Images/Library.png" alt="add-playlist"><p>Add Your Playlist</p></a>
+                  <a href="index.html" class="playlist-btn sight move active">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <p>Home</p>
+                  </a>
 
-                <a href="browse-community.html" class="playlist-btn hidden" data-auth-required style="display:none;">
-                  <img src="Images/Explore.png" alt="explore"><p>Explore</p>
-                </a>
+                  <a href="Addyourplaylist.html" class="playlist-btn sight">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <path d="M11 12H3"></path>
+                      <path d="M16 6H3"></path>
+                      <path d="M16 18H3"></path>
+                      <path d="M19 10v6"></path>
+                      <path d="M22 13h-6"></path>
+                    </svg>
+                    <p>Add Your Playlist</p>
+                  </a>
 
-                <a href="dashboard.html" class="playlist-btn hidden" data-auth-required style="display:none;"><img src="Images/Dashboard.png" alt="dashboard"><p>Dashboard</p></a>
+                  <a href="browse-community.html" class="playlist-btn hidden" data-auth-required style="display:none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                    </svg>
+                    <p>Explore</p>
+                  </a>
+
+                  <a href="dashboard.html" class="playlist-btn hidden" data-auth-required style="display:none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <rect width="7" height="9" x="3" y="3" rx="1"></rect>
+                      <rect width="7" height="5" x="14" y="3" rx="1"></rect>
+                      <rect width="7" height="9" x="14" y="12" rx="1"></rect>
+                      <rect width="7" height="5" x="3" y="16" rx="1"></rect>
+                    </svg>
+                    <p>Dashboard</p>
+                  </a>
 
                 <button id="signin-btn" data-no-auth onclick="openAuthModal('signin')" style="background: var(--bg-secondary); border: none; padding: 12px 24px; border-radius: 20px; color: white; cursor: pointer; font-weight: 600; margin-top: 20px; width: 100%;">
                    Sign In
@@ -81,13 +109,13 @@
                 <p class="mood-question">How are you feeling right now?</p>
             </div>
 
-            <!-- ✅ SEARCH BAR (animates to top when clicked) -->
+            <!-- SEARCH BAR (animates to top when clicked) -->
             <div class="search-input-wrapper" id="search-wrapper">
                 <input type="text" placeholder="Find playlists by keyword" class="input" id="searchInput">
                 <img src="Images/icon-search.svg" alt="search" class="search-icon" id="searchButton">
             </div>
 
-            <!-- ✅ RESULTS CONTAINER (shows in overlay when search active) -->
+            <!-- RESULTS CONTAINER (shows in overlay when search active) -->
             <div id="search-results-overlay">
                 <div id="search-results" class="results-container"></div>
             </div>

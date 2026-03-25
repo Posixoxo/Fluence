@@ -12,6 +12,7 @@
   /* Accents */
   --accent-primary: #fcb790;  /* peach glow */
   --accent-secondary: #3fb2a1;
+  --xpli-xit: #f5f5f5;
 
   /* UI Elements */
   --button-bg: #094c41;
@@ -46,6 +47,7 @@ body.light-mode {
   /* Accents */
   --accent-primary: #fcb790;  /* peach glow */
   --accent-secondary: #094c41;
+  --xpli-xit: #094c41;
 
   /* UI Elements */
   --button-bg: #094c41;
@@ -240,6 +242,7 @@ body.nav-open {
     transition: all 0.3s ease;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     width: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .sight{
@@ -261,26 +264,33 @@ body.nav-open {
       display: flex !important;
     }
 
-  .playlist-btn img{
-    display: block;
-    width: 20px;
-    height: auto;
-    max-width: 100%;
-    margin: 0;
+    .playlist-btn .nav-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    transition: filter 0.3s ease;
+    stroke: var(--xpli-xit);
   }
 
   .playlist-btn p{
     margin: auto 0;
-    font-family: "Caprasimo", serif;
+    font-family: Arial, Helvetica, sans-serif;
     color: var(--text-primary);
-    font-size: 12px;
-    letter-spacing: 2px;
+    font-weight: 900;
+  }
+
+  .playlist-btn:hover p{
+    color: white;
+  }
+
+  .playlist-btn:hover .nav-icon{
+   stroke: white;
   }
   
   .playlist-btn:hover {
     transform: translateY(-3px) scale(1.03);
     box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
-    background: linear-gradient(135deg, #004643 0%, #d1ac00 250%);
+    background: linear-gradient(135deg, #081917 0%, #d1ac00 250%);
   }
   
   .social-icons{
@@ -294,8 +304,7 @@ main {
     flex: 1;
   }
 
-/*  SEARCH OVERLAY STYLES - FIXED Z-INDEX ISSUE */
-      /* Blur background overlay */
+  /* Blur background overlay */
 #search-blur-overlay {
   display: none;
   position: fixed;
@@ -537,7 +546,6 @@ main {
 }
 
 .mood-button:hover .mood-emoji {
-    /* We call the keyframes here */
     animation-duration: 0.6s;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
@@ -671,7 +679,7 @@ main {
 }
 
 /* THE SOLID MASK LAYER (::after) */
-/* This uses your primary gold color for the button fill */
+/* primary gold color for the button fill */
 
 .color-border-button::after {
     content: "";
@@ -687,8 +695,6 @@ main {
     border-radius: var(--button-radius);
     z-index: -1;
 }
-
-/* Remaining CSS (No changes needed for effect) */
 
 .butt-3 {
     display: flex;
