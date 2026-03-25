@@ -232,6 +232,7 @@ body.nav-open {
 
 .playlist-btn {
     flex-direction: row ;
+    align-items: center;
     gap: 10px;
     background: none;
     color: var(--text-primary);
@@ -248,6 +249,7 @@ body.nav-open {
   .sight{
     display: flex;
     flex-direction: row;
+    align-items: center;
   }
 
   .move{
