@@ -34,7 +34,6 @@
       min-height: 100vh;
     }
 
-    /* ✅ LOADING STATE */
     .loading-center {
       display: flex;
       flex-direction: column;
@@ -79,7 +78,6 @@
       font-weight: 500;
     }
 
-    /* ── NAV ── */
     .c-nav {
       display: flex;
       position: fixed;
@@ -138,7 +136,6 @@
     .c-nav-link.active .nav-icon{ stroke: var(--c-accent); }
     .c-nav-link.active p{color: var(--c-accent); }
 
-    /* ── HERO ── */
     .c-hero {
       padding: 56px 32px 40px;
       max-width: 1100px;
@@ -174,53 +171,17 @@
       max-width: 520px;
     }
 
-    /* ── FILTERS ── */
-    .c-filters {
+    /* ✅ NEW: Sort controls only */
+    .c-controls {
       max-width: 1100px;
       margin: 0 auto 32px;
       padding: 0 32px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      justify-content: flex-end;
       align-items: center;
     }
 
-    .filter-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--c-muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-right: 4px;
-    }
-
-    .filter-chip {
-      padding: 8px 18px;
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      border-radius: 20px;
-      color: var(--c-muted);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      transition: all 0.2s;
-    }
-
-    .filter-chip:hover {
-      border-color: var(--c-accent);
-      color: var(--c-text);
-    }
-
-    .filter-chip.active {
-      background: var(--c-muted);
-      color: #081917;
-      border-color: transparent;
-      font-weight: 700;
-    }
-
     .sort-select {
-      margin-left: auto;
       padding: 8px 14px;
       background: var(--c-surface);
       border: 1px solid var(--c-border);
@@ -234,20 +195,76 @@
 
     .sort-select option { background: var(--c-card); }
 
-    /* ── GRID ── */
-    .c-grid-wrap {
+    /* ✅ NEW: Genre sections */
+    .c-sections-wrap {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 0 32px 80px;
+      padding: 0 32px 100px;
     }
 
-    .c-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
+    .genre-section {
+      margin-bottom: 48px;
     }
 
+    .genre-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .genre-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--c-text);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .genre-count {
+      font-size: 13px;
+      color: var(--c-muted);
+      background: var(--c-surface);
+      padding: 4px 12px;
+      border-radius: 12px;
+    }
+
+    /* ✅ NEW: Horizontal scrollable row */
+    .genre-scroll {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 12px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    .genre-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .genre-scroll::-webkit-scrollbar-track {
+      background: var(--c-surface);
+      border-radius: 3px;
+    }
+
+    .genre-scroll::-webkit-scrollbar-thumb {
+      background: var(--c-muted);
+      border-radius: 3px;
+    }
+
+    .genre-scroll::-webkit-scrollbar-thumb:hover {
+      background: var(--c-accent2);
+    }
+
+    /* ✅ Playlist cards in horizontal scroll */
     .pl-card {
+      flex-shrink: 0;
+      width: 200px;
+      scroll-snap-align: start;
       background: var(--c-card);
       border-radius: var(--radius-md);
       overflow: hidden;
@@ -312,21 +329,9 @@
       flex-wrap: wrap;
     }
 
-    .pl-card-genre {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--c-accent2);
-      background: rgba(63, 178, 161, 0.12);
-      padding: 3px 8px;
-      border-radius: 4px;
-    }
-
     .pl-card-plays {
       font-size: 11px;
       color: var(--c-muted);
-      margin-left: auto;
     }
 
     .pl-card-user {
@@ -497,39 +502,8 @@
 
     .modal-user-name { font-weight: 600; font-size: 14px; }
     .modal-user-sub { font-size: 12px; color: var(--c-muted); }
-    .modal-user-arrow { margin-left: auto; color: var(--c-muted); }
-
-    .skeleton-card {
-      background: var(--c-card);
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--c-border);
-    }
-
-    .skeleton-cover {
-      width: 100%;
-      aspect-ratio: 1;
-      background: linear-gradient(90deg, var(--c-surface) 25%, #153a36 50%, var(--c-surface) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.2s infinite;
-    }
-
-    .skeleton-line {
-      height: 14px;
-      background: var(--c-surface);
-      border-radius: 4px;
-      margin-bottom: 8px;
-      animation: shimmer 1.2s infinite;
-      background: linear-gradient(90deg, var(--c-surface) 25%, #153a36 50%, var(--c-surface) 75%);
-      background-size: 200% 100%;
-    }
-
-    .skeleton-line.short { width: 60%; }
-
-    @keyframes shimmer { to { background-position: -200% 0; } }
 
     .c-empty {
-      grid-column: 1/-1;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -556,15 +530,16 @@
 
     @media (max-width: 768px) {
       .c-nav { padding: 16px; }
-      .c-hero, .c-filters, .c-grid-wrap { padding-left: 16px; padding-right: 16px; }
+      .c-hero, .c-controls, .c-sections-wrap { padding-left: 16px; padding-right: 16px; }
       .c-hero { padding-top: 36px; }
-      .c-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+      .pl-card { width: 160px; }
+      .genre-scroll { gap: 12px; }
     }
 </style>
 </head>
 <body>
 
-<!-- ✅ LOADING STATE (shown first) -->
+<!-- LOADING STATE -->
 <div id="loading-state" style="display: block;">
   <div class="loading-center">
     <div class="loading-dots">
@@ -576,7 +551,7 @@
   </div>
 </div>
 
-<!-- ✅ AUTH GATE (hidden by default) -->
+<!-- AUTH GATE -->
 <div id="community-auth-gate" style="display: none; position: fixed; inset: 0; background: var(--c-bg); z-index: 10000; align-items: center; justify-content: center; padding: 24px;">
   <div style="text-align: center; max-width: 480px;">
     <div style="font-size: 64px; margin-bottom: 24px;">🔐</div>
@@ -585,11 +560,11 @@
       Join Fluence to discover playlists from our community, share your own, and connect with music lovers.
     </p>
     
-    <button id="auth-gate-signin-btn" style="padding: 14px 32px; background: linear-gradient(135deg, var(--c-accent), var(--c-accent2)); border: none; border-radius: 20px; color: #081917; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-bottom: 12px; width: 100%; max-width: 300px;">
+    <button id="auth-gate-signin-btn-community" style="padding: 14px 32px; background: var(--c-accent); border: none; border-radius: 20px; color: #081917; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-bottom: 12px; width: 100%; max-width: 300px;">
       Sign In
     </button>
     <br>
-    <button id="auth-gate-signup-btn" style="padding: 12px 32px; background: transparent; border: 1px solid var(--c-border); border-radius: 20px; color: var(--c-text); font-weight: 600; font-size: 15px; cursor: pointer; font-family: 'DM Sans', sans-serif; width: 100%; max-width: 300px; margin-top: 8px;">
+    <button id="auth-gate-signup-btn-community" style="padding: 12px 32px; background: transparent; border: 1px solid var(--c-border); border-radius: 20px; color: var(--c-text); font-weight: 600; font-size: 15px; cursor: pointer; font-family: 'DM Sans', sans-serif; width: 100%; max-width: 300px; margin-top: 8px;">
       Create Account
     </button>
     
@@ -599,7 +574,7 @@
   </div>
 </div>
 
-<!-- ✅ MAIN CONTENT (hidden by default) -->
+<!-- MAIN CONTENT -->
 <div id="community-content" style="display: none;">
 
 <nav class="c-nav">
@@ -635,39 +610,22 @@
   <p>Discover what other Fluence users are listening to. Every genre, every vibe.</p>
 </div>
 
-<div class="c-filters">
-  <span class="filter-label">Genre</span>
-  <button class="filter-chip active" data-genre="all" onclick="applyFilter('all')">All</button>
-  <button class="filter-chip" data-genre="Afrobeats" onclick="applyFilter('Afrobeats')">Afrobeats</button>
-  <button class="filter-chip" data-genre="Amapiano" onclick="applyFilter('Amapiano')">Amapiano</button>
-  <button class="filter-chip" data-genre="Chill" onclick="applyFilter('Chill')">Chill</button>
-  <button class="filter-chip" data-genre="Dancehall" onclick="applyFilter('Dancehall')">Dancehall</button>
-  <button class="filter-chip" data-genre="Drill" onclick="applyFilter('Drill')">Drill</button>
-  <button class="filter-chip" data-genre="Electronic" onclick="applyFilter('Electronic')">Electronic</button>
-  <button class="filter-chip" data-genre="Gospel" onclick="applyFilter('Gospel')">Gospel</button>
-  <button class="filter-chip" data-genre="Hip-Hop" onclick="applyFilter('Hip-Hop')">Hip-Hop</button>
-  <button class="filter-chip" data-genre="Jazz" onclick="applyFilter('Jazz')">Jazz</button>
-  <button class="filter-chip" data-genre="Pop" onclick="applyFilter('Pop')">Pop</button>
-  <button class="filter-chip" data-genre="R&B" onclick="applyFilter('R&B')">R&B</button>
-  <button class="filter-chip" data-genre="Reggae" onclick="applyFilter('Reggae')">Reggae</button>
-  <button class="filter-chip" data-genre="Soul" onclick="applyFilter('Soul')">Soul</button>
-  <button class="filter-chip" data-genre="Other" onclick="applyFilter('Other')">Other</button>
-
+<!-- ✅ SORT CONTROLS ONLY -->
+<div class="c-controls">
   <select class="sort-select" id="sort-select" onchange="applySort(this.value)">
     <option value="newest">Newest first</option>
     <option value="mostPlayed">Most played</option>
   </select>
 </div>
 
-<div class="c-grid-wrap">
-  <div class="c-grid" id="community-grid"></div>
-</div>
+<!-- ✅ GENRE SECTIONS -->
+<div class="c-sections-wrap" id="community-sections"></div>
 
 </div>
 
 <!-- MODAL -->
 <div class="pl-modal-overlay" id="pl-modal-overlay" onclick="closeModal(event)">
-  <div class="pl-modal" id="pl-modal">
+  <div class="pl-modal" onclick="event.stopPropagation()">
     <div id="modal-cover-area"></div>
     <div class="pl-modal-body">
       <p class="pl-modal-genre" id="modal-genre"></p>
@@ -707,8 +665,14 @@ const PLATFORM_ICONS = {
   other: `<img src="https://cdn.simpleicons.org/linktree/19E467" class="pl-platform-icon" alt="Link">` 
 };
 
+// ✅ Genre order matches filter buttons
+const GENRE_ORDER = [
+  'Afrobeats', 'Amapiano', 'Chill', 'Dancehall', 'Drill', 
+  'Electronic', 'Gospel', 'Hip-Hop', 'Jazz', 'Pop', 
+  'R&B', 'Reggae', 'Soul', 'Other'
+];
+
 let allPlaylists = [];
-let currentFilter = 'all';
 let currentSort = 'newest';
 let activePlaylist = null;
 let activeUserId = null;
@@ -723,17 +687,21 @@ fetch('auth-modal.html')
   .then(r => r.text())
   .then(html => { 
     document.getElementById('auth-modal-container').innerHTML = html;
-    setTimeout(attachAuthHandlers, 200);
+    setTimeout(() => {
+      attachAuthHandlers();
+      setupAuthModalHandlers();
+    }, 200);
   })
   .catch(err => console.error('❌ Auth modal load failed:', err));
 
-// ✅ Attach auth gate button handlers
+// ✅ FIX: Unique button IDs and proper event listeners
 function attachAuthHandlers() {
-  const signinBtn = document.getElementById('auth-gate-signin-btn');
-  const signupBtn = document.getElementById('auth-gate-signup-btn');
+  const signinBtn = document.getElementById('auth-gate-signin-btn-community');
+  const signupBtn = document.getElementById('auth-gate-signup-btn-community');
   
   if (signinBtn) {
     signinBtn.addEventListener('click', () => {
+      console.log('🔑 Community gate - Sign in clicked');
       if (typeof window.openAuthModal === 'function') {
         window.openAuthModal('signin');
       } else {
@@ -744,6 +712,7 @@ function attachAuthHandlers() {
   
   if (signupBtn) {
     signupBtn.addEventListener('click', () => {
+      console.log('🔑 Community gate - Sign up clicked');
       if (typeof window.openAuthModal === 'function') {
         window.openAuthModal('signup');
       } else {
@@ -753,8 +722,70 @@ function attachAuthHandlers() {
   }
 }
 
-// ✅ Make handleGoogleSignIn global for auth modal
+// ✅ FIX: Properly set up auth modal form handlers
+function setupAuthModalHandlers() {
+  console.log('🔧 Setting up auth modal handlers...');
+  
+  const signinForm = document.getElementById('signin-form-element');
+  const signupForm = document.getElementById('signup-form-element');
+  
+  if (signinForm && !signinForm.dataset.listenerAttached) {
+    signinForm.dataset.listenerAttached = 'true';
+    signinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      console.log('📝 Sign in form submitted');
+      const email = document.getElementById('signin-email').value;
+      const password = document.getElementById('signin-password').value;
+      
+      const { signIn } = await import('./auth.js');
+      const result = await signIn(email, password);
+      
+      if (result.success) {
+        if (typeof window.closeAuthModal === 'function') {
+          window.closeAuthModal();
+        }
+      } else {
+        const errorEl = document.getElementById('signin-error');
+        if (errorEl) {
+          errorEl.textContent = result.error;
+          errorEl.style.display = 'block';
+        }
+      }
+    });
+    console.log('✅ Sign in form handler attached');
+  }
+  
+  if (signupForm && !signupForm.dataset.listenerAttached) {
+    signupForm.dataset.listenerAttached = 'true';
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      console.log('📝 Sign up form submitted');
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      
+      const { signUp } = await import('./auth.js');
+      const result = await signUp(email, password, name);
+      
+      if (result.success) {
+        if (typeof window.closeAuthModal === 'function') {
+          window.closeAuthModal();
+        }
+      } else {
+        const errorEl = document.getElementById('signup-error');
+        if (errorEl) {
+          errorEl.textContent = result.error;
+          errorEl.style.display = 'block';
+        }
+      }
+    });
+    console.log('✅ Sign up form handler attached');
+  }
+}
+
+// ✅ Make handleGoogleSignIn global
 window.handleGoogleSignIn = async () => {
+  console.log('🔑 Google sign in clicked');
   const result = await signInWithGoogle();
   if (result.success && typeof window.closeAuthModal === 'function') {
     window.closeAuthModal();
@@ -763,17 +794,14 @@ window.handleGoogleSignIn = async () => {
   }
 };
 
-// ✅ Auth state handler - NO FLASHING
+// Auth state handler
 onAuthStateChanged(auth, async (user) => {
-  // Hide loading
   if (loadingState) loadingState.style.display = 'none';
   
   if (!user) {
-    // Not logged in
     if (authGate) authGate.style.display = 'flex';
     if (content) content.style.display = 'none';
   } else {
-    // Logged in
     currentUser = user;
     if (authGate) authGate.style.display = 'none';
     if (content) content.style.display = 'block';
@@ -782,13 +810,13 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 async function loadCommunity() {
-  const grid = document.getElementById('community-grid');
-  if (!grid) return;
+  const sectionsContainer = document.getElementById('community-sections');
+  if (!sectionsContainer) return;
 
-  const result = await getCommunityPlaylists({ limitCount: 60 });
+  const result = await getCommunityPlaylists({ limitCount: 200 });
 
   if (!result.success || !result.playlists.length) {
-    grid.innerHTML = `
+    sectionsContainer.innerHTML = `
       <div class="c-empty">
         <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
@@ -801,6 +829,7 @@ async function loadCommunity() {
 
   allPlaylists = result.playlists;
 
+  // Fetch user profiles
   const userIds = [...new Set(allPlaylists.map(p => p.userId))];
   const userMap = {};
   await Promise.all(userIds.map(async (uid) => {
@@ -813,34 +842,56 @@ async function loadCommunity() {
     _user: userMap[p.userId] || null
   }));
 
-  renderGrid();
+  renderGenreSections();
 }
 
-function renderGrid() {
-  const grid = document.getElementById('community-grid');
-  if (!grid) return;
-  
-  let filtered = [...allPlaylists];
+// ✅ NEW: Render genre sections
+function renderGenreSections() {
+  const sectionsContainer = document.getElementById('community-sections');
+  if (!sectionsContainer) return;
 
-  if (currentFilter !== 'all') {
-    filtered = filtered.filter(p => p.genre === currentFilter);
-  }
-
+  // Sort playlists based on current sort
+  let sorted = [...allPlaylists];
   if (currentSort === 'mostPlayed') {
-    filtered.sort((a, b) => (b.playCount || 0) - (a.playCount || 0));
+    sorted.sort((a, b) => (b.playCount || 0) - (a.playCount || 0));
+  } else {
+    sorted.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
   }
 
-  if (!filtered.length) {
-    grid.innerHTML = `<div class="c-empty"><h3>No playlists for this filter</h3><p>Try a different genre</p></div>`;
-    return;
-  }
+  // Group by genre
+  const byGenre = {};
+  sorted.forEach(pl => {
+    const genre = pl.genre || 'Other';
+    if (!byGenre[genre]) byGenre[genre] = [];
+    byGenre[genre].push(pl);
+  });
 
+  // Render sections in order
+  sectionsContainer.innerHTML = GENRE_ORDER
+    .filter(genre => byGenre[genre] && byGenre[genre].length > 0)
+    .map(genre => {
+      const playlists = byGenre[genre];
+      return `
+        <div class="genre-section">
+          <div class="genre-section-header">
+            <h2 class="genre-title">${escHtml(genre)}</h2>
+            <span class="genre-count">${playlists.length} ${playlists.length === 1 ? 'playlist' : 'playlists'}</span>
+          </div>
+          <div class="genre-scroll">
+            ${playlists.map(pl => renderPlaylistCard(pl)).join('')}
+          </div>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function renderPlaylistCard(pl) {
+  const user = pl._user;
+  const icon = PLATFORM_ICONS[pl.platform] || '🔗';
   const defaultAvatar = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23333%22 width=%22100%22 height=%22100%22/%3E%3Ctext fill=%22%23ccc%22 font-size=%2240%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.35em%22%3E👤%3C/text%3E%3C/svg%3E';
 
-  grid.innerHTML = filtered.map(pl => {
-    const user = pl._user;
-    const icon = PLATFORM_ICONS[pl.platform] || '🔗';
-    return `
+  return `
     <div class="pl-card" onclick="openPlaylist('${pl.id}')">
       <span class="pl-card-platform">${icon}</span>
       ${pl.coverURL
@@ -851,7 +902,6 @@ function renderGrid() {
       <div class="pl-card-body">
         <div class="pl-card-title">${escHtml(pl.title)}</div>
         <div class="pl-card-meta">
-          ${pl.genre ? `<span class="pl-card-genre">${escHtml(pl.genre)}</span>` : ''}
           ${pl.playCount ? `<span class="pl-card-plays">▶ ${pl.playCount}</span>` : ''}
         </div>
       </div>
@@ -860,23 +910,16 @@ function renderGrid() {
         <img class="user-avatar-sm" src="${user.photoURL || defaultAvatar}" alt="" onerror="this.src='${defaultAvatar}'">
         <span class="user-name-sm">${escHtml(user.displayName || user.email || 'Anonymous')}</span>
       </div>` : ''}
-    </div>`;
-  }).join('');
+    </div>
+  `;
 }
-
-window.applyFilter = (genre) => {
-  currentFilter = genre;
-  document.querySelectorAll('.filter-chip').forEach(c => {
-    c.classList.toggle('active', c.dataset.genre === genre);
-  });
-  renderGrid();
-};
 
 window.applySort = (val) => {
   currentSort = val;
-  renderGrid();
+  renderGenreSections();
 };
 
+// ✅ FIX: recordPlay tracks ACTUAL user clicks
 window.openPlaylist = async (playlistId) => {
   const pl = allPlaylists.find(p => p.id === playlistId);
   if (!pl) return;
@@ -916,7 +959,8 @@ window.openPlaylist = async (playlistId) => {
   document.getElementById('pl-modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  recordPlay(playlistId, null);
+  // ✅ Record play count - increments every time someone opens the modal
+  await recordPlay(playlistId, currentUser?.uid || null);
 };
 
 window.closePLModal = () => {
@@ -926,11 +970,14 @@ window.closePLModal = () => {
 };
 
 window.closeModal = (e) => {
-  if (e.target === document.getElementById('pl-modal-overlay')) closePLModal();
+  if (e.target.id === 'pl-modal-overlay') closePLModal();
 };
 
 window.openInPlatform = () => {
-  if (activePlaylist?.sourceURL) window.open(activePlaylist.sourceURL, '_blank');
+  if (activePlaylist?.sourceURL) {
+    // ✅ This counts as a play - user clicked to open external link
+    window.open(activePlaylist.sourceURL, '_blank');
+  }
 };
 
 window.goToUserProfile = () => {
