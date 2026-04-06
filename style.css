@@ -78,18 +78,39 @@ body.nav-open {
 
 
 .nbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px 30px;
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   justify-content: space-between;
+   margin: 25px 20px;
+   text-align: center;
+}
+
+.openbtn{
+  margin: 10px 0 0 0;
+}
+
+.container-x a{
+  display: flex;     
+  align-items: center; 
+  margin: 0;
+  line-height: 0;
+}
+
+.container-x{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  margin: -40px 0 0 0;
 }
 
 .logo-t{
   width: 60px;
-  margin: auto;
   height: auto;
   display: block;
   max-width: 100%;
+  margin: 0;
 }
 
 .logo-t:hover {
@@ -104,14 +125,15 @@ body.nav-open {
     border-radius: 50%;
     color: var(--text-primary);
     border: 2px solid var(--bg-secondary);
-    margin-left: auto;
     display: flex;
     align-items: center;
     justify-content: center;
     background: transparent;
+    flex-shrink: 0;
     cursor: pointer;
     transition: all 0.3s ease;
     padding: 10px;
+    margin: -47px 0 -47px auto;
     transition: opacity 0.2s ease;
 }
 
@@ -318,7 +340,7 @@ main {
   background: rgba(8, 25, 23, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  z-index: 99998; /* ✅ BELOW mobile nav (99999) */
+  z-index: 99998; /*  BELOW mobile nav (99999) */
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -342,7 +364,7 @@ main {
   transform: translateX(-50%) !important;
   max-width: 600px !important;
   width: 90% !important;
-  z-index: 100000 !important; /* ✅ ABOVE mobile nav */
+  z-index: 100000 !important; /* ABOVE mobile nav */
 }
       
  /* Results container for overlay */
@@ -356,7 +378,7 @@ main {
   max-width: 900px;
   max-height: calc(100vh - 200px);
   overflow-y: auto;
-  z-index: 100000; /* ✅ ABOVE mobile nav */
+  z-index: 100000; /* ABOVE mobile nav */
   padding-bottom: 40px;
 }
       
@@ -1118,7 +1140,7 @@ footer{
     align-items: center;
     margin: 80px 0 0 0;
     padding: 0 10px;
-    font-size: 16px;
+    font-size: 12px;
     font-family: serif;
     letter-spacing: 3px; 
     background: var(--bg-primary);
@@ -1300,7 +1322,7 @@ footer{
 }
 
   
-  /* 🔮 Coming Soon Card Styles */
+  /* Coming Soon Card Styles */
   .coming-soon-card {
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(10px);
@@ -1356,9 +1378,9 @@ footer{
   
   
 
-  /* LOADING STATES & ERROR BOUNDARIES - Add to your existing style.css */
+/* LOADING STATES & ERROR BOUNDARIES */
 
-/* ✅ SPINNER ANIMATION */
+/* SPINNER ANIMATION */
 .spinner {
   width: 50px;
   height: 50px;
@@ -1385,7 +1407,7 @@ body.light-mode .spinner {
   border-top-color: var(--accent-primary);
 }
 
-/* ✅ SLIDE DOWN ANIMATION for Error Banner */
+/* SLIDE DOWN ANIMATION for Error Banner */
 @keyframes slideDown {
   from {
     transform: translateY(-100%);
@@ -1397,7 +1419,7 @@ body.light-mode .spinner {
   }
 }
 
-/* ✅ LOADING STATE for Search Results */
+/* LOADING STATE for Search Results */
 #search-results.loading {
   min-height: 200px;
   display: flex;
@@ -1405,7 +1427,7 @@ body.light-mode .spinner {
   justify-content: center;
 }
 
-/* ✅ ERROR STATE Styling */
+/* ERROR STATE Styling */
 .error-container {
   text-align: center;
   padding: 40px 20px;
@@ -1426,7 +1448,7 @@ body.light-mode .spinner {
   margin-bottom: 20px;
 }
 
-/* ✅ RETRY BUTTON Styling */
+/* RETRY BUTTON Styling */
 .retry-button {
   padding: 12px 24px;
   background: linear-gradient(135deg, #1DB954, #1ed760);
@@ -1455,7 +1477,7 @@ body.light-mode .spinner {
   transform: none;
 }
 
-/* ✅ DISABLED STATE for Inputs */
+/* DISABLED STATE for Inputs */
 input:disabled,
 button:disabled {
   opacity: 0.6;
@@ -1463,7 +1485,7 @@ button:disabled {
   pointer-events: none;
 }
 
-/* ✅ RATE LIMIT WARNING Badge */
+/* RATE LIMIT WARNING Badge */
 .rate-limit-badge {
   position: fixed;
   bottom: 20px;
@@ -1490,7 +1512,7 @@ button:disabled {
   }
 }
 
-/* ✅ PULSE ANIMATION for Active Visualizer */
+/* PULSE ANIMATION for Active Visualizer */
 #visualizer.active span {
   animation: visualizer-pulse 0.6s ease-in-out infinite alternate !important;
 }
@@ -1506,7 +1528,7 @@ button:disabled {
   }
 }
 
-/* ✅ SKELETON LOADING for Playlist Cards */
+/* SKELETON LOADING for Playlist Cards */
 .skeleton-card {
   background: linear-gradient(
     90deg,
@@ -1529,7 +1551,7 @@ button:disabled {
   }
 }
 
-/* ✅ SMOOTH FADE IN for Results */
+/* SMOOTH FADE IN for Results */
 .results-inner {
   animation: fadeIn 0.4s ease;
 }
@@ -1545,7 +1567,7 @@ button:disabled {
   }
 }
 
-/* ✅ SEARCH INPUT Loading State */
+/* SEARCH INPUT Loading State */
 .input.loading {
   background: linear-gradient(
     90deg,
@@ -1566,7 +1588,7 @@ button:disabled {
   }
 }
 
-/* ✅ HOVER EFFECTS for Interactive Elements */
+/* HOVER EFFECTS for Interactive Elements */
 .mood-button:hover:not(:disabled),
 .artist-button:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.02);
@@ -1579,7 +1601,7 @@ button:disabled {
   transform: translateY(0) scale(1);
 }
 
-/* ✅ FOCUS STATES for Accessibility */
+/* FOCUS STATES for Accessibility */
 .input:focus,
 .mood-button:focus,
 .artist-button:focus,
@@ -1588,7 +1610,7 @@ button:focus {
   outline-offset: 2px;
 }
 
-/* ✅ MOBILE OPTIMIZATIONS */
+/* MOBILE OPTIMIZATIONS */
 @media (max-width: 768px) {
   .spinner {
     width: 40px;
@@ -1618,7 +1640,147 @@ button:focus {
   }
 }
 
-/* ✅ IMPROVED TRACK CARD Hover States */
+
+@media (min-width: 768px) {
+
+  .greeting-text {
+    font-size: 30px;
+  }
+
+  .mood-question {
+    font-size: 18px;
+  }
+  
+  .search-input-wrapper {
+    max-width: 384px !important;
+  }
+
+  .input{
+    align-items: center;
+  }
+
+  .input::placeholder{  
+    text-align: center;
+  }
+
+}
+
+@media (max-width: 1000px) {
+  .vibe-builder{
+    max-width: 800px;
+    margin: 25px auto;
+  }
+}
+
+@media (max-width: 1020px) {
+  .vibe-builder{
+    max-width: 800px;
+    margin: 25px auto;
+  }
+}
+
+
+.mobile-version{
+    display: block;
+}
+
+.desktop-version{
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .mobile-version{
+      display: none;
+  }
+  
+  .desktop-version{
+    display: block;
+  }
+
+  .logo-t{
+    margin: 0;
+    padding: 0;
+  }
+
+.container-one {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    flex-direction: row;
+    border-radius: 20px;
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: var(--bg-primary); 
+    padding: 0 40px;
+    box-sizing: border-box; 
+    z-index: 9999;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+  .desktop-links{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    margin: 0;
+    padding: 0 10px;
+  }
+
+  .desktop-links a{
+    border-radius: 12px;
+    color: var(--accent-primary);
+    font-size: 10px !important;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    text-decoration: none;
+    margin: 0;
+    padding: 12px 24px;
+  }
+
+  .greeting-container{
+    margin: 150px 0 0 0;
+  }
+
+  .mood-grido{
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .playlist-controls{
+    margin: 150px auto 0 auto;
+  }
+
+  .container{
+    margin: 130px auto 80px auto;
+  }
+
+  .vibe-builder{
+    display: flex;
+    justify-content: center;
+  }
+
+  .vibe-builder label{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+}
+
+
+
+
+
+
+/* IMPROVED TRACK CARD Hover States */
 .result-track,
 .track-card {
   transition: all 0.3s ease;
@@ -1631,7 +1793,7 @@ button:focus {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* ✅ PLAYLIST CARD Improvements */
+/* PLAYLIST CARD Improvements */
 .result-playlist-card {
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1642,7 +1804,7 @@ button:focus {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
 }
 
-/* ✅ AUDIO PLAYER Styling */
+/* AUDIO PLAYER Styling */
 audio.audio-player {
   width: 100%;
   margin-top: 8px;
@@ -1654,7 +1816,7 @@ audio.audio-player::-webkit-media-controls-panel {
   background-color: var(--bg-card);
 }
 
-/* ✅ NO RESULTS Message */
+/* NO RESULTS Message */
 .no-results {
   text-align: center;
   padding: 60px 20px;
@@ -1667,7 +1829,7 @@ audio.audio-player::-webkit-media-controls-panel {
   opacity: 0.5;
 }
 
-/* ✅ CONNECTION ERROR Icon */
+/* CONNECTION ERROR Icon */
 .connection-error {
   text-align: center;
   padding: 40px 20px;

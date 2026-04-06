@@ -15,13 +15,86 @@
 
     <header>
         <nav class="nbar">
-             <a href="index.html"><img src="Images/Fluence2.PNG" alt="fluence" class="logo-t"></a>
+          
+          <div class="mobile-version container-x">
+              <a href="index.html"><img src="Images/Fluence2.PNG" alt="fluence" class="logo-t"></a>
 
-          <button class="theme-toggle" id="dark-mode-toggle" aria-label="Toggle Dark/Light Mode">
-            <img id="theme-icon" src="Images/sun-icon.png" alt="Theme Icon" width="18" height="18">
-          </button>
+              <button class="theme-toggle" id="dark-mode-toggle" aria-label="Toggle Dark/Light Mode">
+                <img id="theme-icon" src="Images/sun-icon.png" alt="Theme Icon" width="18" height="18">
+              </button>
+          </div>
 
-            <img src="Images/icon-hamburger.svg" alt="menu-open" id="menu-open-btn">
+          <div class="desktop-version container-one">
+              <a href="index.html"><img src="Images/Fluence2.PNG" alt="fluence" class="logo-t"></a>
+              
+              <div class="desktop-links">
+                  <a href="index.html" class="playlist-btn sight move active">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <p>Home</p>
+                  </a>
+
+                  <a href="Addyourplaylist.html" class="playlist-btn sight">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <path d="M11 12H3"></path>
+                      <path d="M16 6H3"></path>
+                      <path d="M16 18H3"></path>
+                      <path d="M19 10v6"></path>
+                      <path d="M22 13h-6"></path>
+                    </svg>
+                    <p>Add Your Playlist</p>
+                  </a>
+
+                  <a href="browse-community.html" class="playlist-btn hidden" data-auth-required style="display:none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                    </svg>
+                    <p>Explore</p>
+                  </a>
+
+                  <a href="dashboard.html" class="playlist-btn hidden" data-auth-required style="display:none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                      <rect width="7" height="9" x="3" y="3" rx="1"></rect>
+                      <rect width="7" height="5" x="14" y="3" rx="1"></rect>
+                      <rect width="7" height="9" x="14" y="12" rx="1"></rect>
+                      <rect width="7" height="5" x="3" y="16" rx="1"></rect>
+                    </svg>
+                    <p>Dashboard</p>
+                  </a>
+
+                <button id="signin-btn" data-no-auth onclick="openAuthModal('signin')" style="background: var(--bg-secondary); border: none; padding: 12px 24px; border-radius: 20px; color: white; cursor: pointer; font-weight: 600; margin-top: 20px; width: 100%;">
+                   Sign In
+                </button>
+
+              <div id="user-profile-section" data-auth-required style="position: relative; display: inline-block; transition: transform 0.2s;">
+                
+                <img data-user-photo 
+                    onclick="toggleProfileDropdown(event)"
+                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: none; cursor: pointer; transition: transform 0.2s;" 
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23333' width='100' height='100'/%3E%3Ctext fill='%23ccc' font-size='40' x='50%25' y='50%25' text-anchor='middle' dy='.35em'%3E👤%3C/text%3E%3C/svg%3E"
+                    alt="Profile">
+
+                <div id="profile-dropdown-menu" style="display: none; position: absolute; right: 0; top: 50px; width: 220px; background: rgba(128, 128, 128, 0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 12px; padding: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); z-index: 1000;">
+                  
+                  <div onclick="goToMyProfile()" style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer;">
+                    <div data-user-name style="font-weight: 700; color: var(--text-primary); font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">View Profile →</div>
+                  </div>
+
+                  <button onclick="signOutUser()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #ff6b6b, #ee5a6f); border: none; border-radius: 10px; color: var(--text-primary); display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font-weight: 700; text-align: center; font-size: 14px; transition: transform 0.2s;">
+                    <img src="Images/icons8-logout-rounded-100.png" alt="icon8" style="display: block; width: 20px; height: auto;"> Sign Out
+                  </button>
+                  
+                </div>
+              </div>
+              </div>   
+            
+          </div>
+
+            <div class="mobile-version"><img src="Images/icon-hamburger.svg" alt="menu-open" id="menu-open-btn" class="openbtn">  </div>       
         </nav>
 
         <div id="mobile-nav-container">
@@ -502,6 +575,37 @@ window.goToMyProfile = function() {
     }
   }
 };
+</script>
+
+<script>
+   // desktop profile-image with dropdown fix
+
+  function toggleProfileDropdown(event) {
+  // Prevent the click from immediately bubbling up to the window
+  event.stopPropagation(); 
+  
+  const dropdown = document.getElementById('profile-dropdown-menu');
+  
+  // Toggle visibility
+  if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+    dropdown.style.display = 'block';
+  } else {
+    dropdown.style.display = 'none';
+  }
+}
+
+// Close the dropdown if the user clicks anywhere outside of it
+window.addEventListener('click', function(event) {
+  const dropdown = document.getElementById('profile-dropdown-menu');
+  const profileSection = document.getElementById('user-profile-section');
+  
+  if (dropdown && dropdown.style.display === 'block') {
+    // If the click happened outside the user-profile-section, hide the menu
+    if (!profileSection.contains(event.target)) {
+      dropdown.style.display = 'none';
+    }
+  }
+});
 </script>
   
 </body>

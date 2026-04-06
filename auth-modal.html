@@ -47,7 +47,10 @@
     <div id="signup-form" class="auth-form" style="display: none;">
       <h2>Create Account</h2>
       <form id="signup-form-element">
-        <input type="text" id="signup-name" placeholder="Display Name" required>
+          <div class="input-group">
+            <img src="Images/icons8-name-96.png" alt="user" class="input-icon">
+            <input type="text" id="signup-name" placeholder="Full Name" required>
+          </div>
 
           <div class="input-group">
             <img src="Images/mail-01.png" alt="mail" class="input-icon">
@@ -259,7 +262,7 @@ setTimeout(initAuthHandlers, 200);
   z-index: 1;
 }
 
-/* ✅ FIXED: Full screen on mobile, centered on desktop */
+/* Full screen on mobile, centered on desktop */
 .auth-modal-content {
   position: relative;
   background: var(--bg-card);
